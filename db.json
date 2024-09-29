@@ -114,7 +114,7 @@
     },
     "incomes": {
       "_id": ObjectId,
-      "user_id": ObjectId,
+      "user_id": string,
       "month": string,
       "salary": double,
       "bonus": [

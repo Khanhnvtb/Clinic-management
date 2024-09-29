@@ -1,0 +1,130 @@
+{
+  "clinic_db": {
+    "Users": {
+      "_id": ObjectId,
+      "user_id": int,
+      "user_name": string,
+      "password": string,
+      "role": int
+    },
+    "Doctor": {
+      "_id": ObjectId,
+      "user_name": string,
+      "doctor_id": string,
+      "CID": string,
+      "name": string,
+      "date_of_birth": date,
+      "address": string,
+      "phone_number": string,
+      "qualification": string,
+      "specialization": [
+        string
+      ]
+    },
+    "Patients": {
+      "_id": ObjectId,
+      "patient_id": string,
+      "CID": string,
+      "name": string,
+      "date_of_birth": date,
+      "address": string,
+      "phone_number": string
+    },
+    "Nurses": {
+      "_id": ObjectId,
+      "nurse_id": string,
+      "CID": string,
+      "name": string,
+      "date_of_birth": date,
+      "address": string,
+      "phone_number": string,
+      "qualification": string
+    },
+    "Visits": {
+      "_id": ObjectId,
+      "visit_id": int,
+      "patient_id": string,
+      "nurse_id": string,
+      "description": [
+        {
+          "content": string,
+          "description": string,
+          "time": datetime
+        }
+      ],
+      "diagnose": string,
+      "visit_date": date,
+      "bill_ids": [
+        int
+      ]
+    },
+    MedicalHistory: {
+      "_id": ObjectId,
+      "disease_id": string,
+      "patient_id": string,
+      "doctor_id": string,
+      "months": [
+        string
+      ],
+      "visit_ids": [
+        int
+      ],
+      "nurse_ids": [
+        string
+      ]
+    },
+    "Diseases": {
+      "_id": ObjectId,
+      "disease_id": string,
+      "name": string,
+      "description": string
+    },
+    "Medicines": {
+      "_id": ObjectId,
+      "medicine_id": string,
+      "name": string,
+      "description": string,
+      "price": double
+    },
+    "Services": {
+      "_id": ObjectId,
+      "service_id": int,
+      "name": string,
+      "description": string,
+      "price": double
+    },
+    "Bill": {
+      "_id": ObjectId,
+      "bill_id": int,
+      "services": [
+        {
+          "service_id": int,
+          "quantity": int,
+          "money": double
+        }
+      ],
+      "medicines": [
+        {
+          "medicine_id": int,
+          "quantity": int,
+          "money": double
+        }
+      ],
+      "total": double,
+    },
+    "incomes": {
+      "_id": ObjectId,
+      "user_id": ObjectId,
+      "month": string,
+      "salary": double,
+      "bonus": [
+        {
+          "description": string,
+          "money": double
+        }
+      ],
+      "total": double,
+      "flag": boolean
+    }
+  }
+}

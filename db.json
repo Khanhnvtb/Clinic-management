@@ -93,7 +93,7 @@
       "description": string,
       "price": double
     },
-    "Bill": {
+    "Bills": {
       "_id": ObjectId,
       "bill_id": int,
       "services": [

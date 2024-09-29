@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm</title>
+</head>
+<body>
+<div class='row justify-content-center'>
+    <!--Bác sĩ-->
+    {% if flag == 1 %}
+    <form action="add_doctor" method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <div class='d-flex justify-content-center mt-4'><input class='btn btn-primary' type="submit" value="Thêm"></div>
+    </form>
+    <!--Y tá-->
+    {% elif flag == 2 %}
+    <form action="add_nurse" method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <div class='d-flex justify-content-center mt-4'><input class='btn btn-primary' type="submit" value="Thêm"></div>
+    </form>
+    <!--Bệnh nhân-->
+    {% elif flag == 3 %}
+    <form action="add_patient" method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <div class='d-flex justify-content-center mt-4'><input class='btn btn-primary' type="submit" value="Thêm"></div>
+    </form>
+    <!--Thuốc-->
+    {% elif flag == 4 %}
+    <form action="add_medicine" method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <div class='d-flex justify-content-center mt-4'><input class='btn btn-primary' type="submit" value="Thêm"></div>
+    </form>
+    <!--Dịch vụ-->
+    {% elif flag == 5 %}
+    <form action="add_service" method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <div class='d-flex justify-content-center mt-4'><input class='btn btn-primary' type="submit" value="Thêm"></div>
+    </form>
+    <!--Bệnh-->
+    {% elif flag == 6 %}
+    <form action="add_disease" method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <div class='d-flex justify-content-center mt-4'><input class='btn btn-primary' type="submit" value="Thêm"></div>
+    </form>
+    {% endif %}
+</div>
+</body>
+</html>

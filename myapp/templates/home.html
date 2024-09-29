@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+<p>Chào mừng bạn</p>
+            <form action="" method="post">{% csrf_token %}
+                {{ form.as_p }}
+                <div class='d-flex justify-content-center mt-4'><input class='btn btn-primary' type="submit" value="Thêm"></div>
+            </form>
+</body>
+</html>

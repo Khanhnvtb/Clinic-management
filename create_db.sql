@@ -1,7 +1,7 @@
 use clinic_db;
 
 db.createCollection("Users");
-db.createCollection("Doctor");
+db.createCollection("Doctors");
 db.createCollection("Patients");
 db.createCollection("Nurses");
 db.createCollection("Visits");
@@ -171,7 +171,7 @@ db.Users.insertMany([
     }
 ]);
 
-db.Doctor.insertMany([
+db.Doctors.insertMany([
   {
     "doctor_id": "D001",
     "user_name": "doctor1",
@@ -4609,6 +4609,16 @@ db.Medicines.insertMany([
         "price": 150000
     }
 ]);
+
+db.Doctors.updateMany(
+    {},
+    { $set: { salary: 7000000, bonus: 1000000 } }
+);
+
+db.Nurses.updateMany(
+    {},
+    { $set: { salary: 5000000, bonus: 200000 } }
+);
 
 
 

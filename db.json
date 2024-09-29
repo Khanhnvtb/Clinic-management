@@ -7,7 +7,7 @@
       "password": string,
       "role": int
     },
-    "Doctor": {
+    "Doctors": {
       "_id": ObjectId,
       "user_name": string,
       "doctor_id": string,

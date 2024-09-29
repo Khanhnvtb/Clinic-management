@@ -19,7 +19,9 @@
       "qualification": string,
       "specialization": [
         string
-      ]
+      ],
+      "salary": double,
+      "bonus": double,
     },
     "Patients": {
       "_id": ObjectId,
@@ -38,7 +40,9 @@
       "date_of_birth": date,
       "address": string,
       "phone_number": string,
-      "qualification": string
+      "qualification": string,
+      "salary": double,
+      "bonus": double
     },
     "Visits": {
       "_id": ObjectId,

@@ -1,17 +1,9 @@
 from datetime import datetime
 
-from django.http import HttpResponse
 from django.contrib import messages
 from django.shortcuts import render, redirect
-from pymongo import MongoClient
 from .forms import *
 from django.forms import formset_factory
-
-
-def get_db_handle():
-    client = MongoClient('mongodb://localhost:27017/?authSource=clinic_db')
-    db_handle = client['clinic_db']
-    return db_handle, client
 
 
 def login(request):
@@ -298,7 +290,7 @@ def add_visit(request):
                 storage.used = True
                 messages.add_message(request, messages.SUCCESS, 'Đăng ký khám thành công')
                 client.close()
-                return redirect('add_visit')
+                return redirect('add_service', visit_id=no)
             else:
                 storage = messages.get_messages(request)
                 storage.used = True
@@ -310,6 +302,126 @@ def add_visit(request):
     return render(request, 'add_visit.html', {'form': form})
 
 
+def add_service(request, visit_id):
+    if request.session['user']['role'] == 2:
+        # Tạo formset với 1 form trống
+        DescriptionFormSet = formset_factory(DescriptionForm, extra=2)
+
+        if request.method == "POST":
+            # Bind dữ liệu từ request.POST vào formset
+            formset = DescriptionFormSet(request.POST or None)
+
+            if formset.is_valid():
+                descriptions = []
+                services = []
+                total = 0
+                db_handle, client = get_db_handle()
+
+                # Lặp qua từng form trong formset
+                for form in formset:
+                    if form.is_valid():
+                        service_id = form.cleaned_data.get('service')
+                        service = db_handle['Services'].find_one({"service_id": int(service_id)})
+                        # Thêm mô tả dịch vụ
+                        descriptions.append({
+                            'content': service['name']
+                        })
+
+                        services.append({
+                            'service_id': service_id,
+                            'quantity': form.cleaned_data.get('quantity')
+                        })
+
+                        # Cộng tổng giá
+                        total += service['price'] * form.cleaned_data.get('quantity')
+
+                # Cập nhật Visit với descriptions
+                db_handle['Visits'].update_one(
+                    {'visit_id': visit_id},
+                    {'$set': {'descriptions': descriptions}}
+                )
+
+                # Tạo bill mới
+                no = db_handle['Bills'].find().sort("bill_id", -1).limit(1)[0]['bill_id'] + 1
+
+                bill = {
+                    'bill_id': no,
+                    'services': services,
+                    'total': total
+                }
+
+                # Thêm bill mới vào collection Bills
+                db_handle['Bills'].insert_one(bill)
+
+                return redirect('home')
+        else:
+            # Nếu là GET, chỉ khởi tạo formset rỗng
+            formset = DescriptionFormSet()
+
+        return render(request, 'add_service.html', {'formset': formset, 'visit_id': visit_id, 'flag': 1, 'url': 'add_service'})
+    else:
+        return redirect('home')
+
+
+def add_medicine(request, visit_id):
+    if request.session['user']['role'] == 2:
+        # Tạo formset với 1 form trống
+        DescriptionFormSet = formset_factory(DescriptionForm, extra=2)
+
+        if request.method == "POST":
+            # Bind dữ liệu từ request.POST vào formset
+            formset = DescriptionFormSet(request.POST or None)
+
+            if formset.is_valid():
+                descriptions = []
+                medicines = []
+                total = 0
+                db_handle, client = get_db_handle()
+
+                # Lặp qua từng form trong formset
+                for form in formset:
+                    if form.is_valid():
+                        medicine_id = form.cleaned_data.get('medicine')
+                        medicine = db_handle['Medicines'].find_one({"medicine_id": medicine_id})
+                        # Thêm mô tả dịch vụ
+                        descriptions.append({
+                            'content': medicine['name']
+                        })
+
+                        medicines.append({
+                            'medicine_id': medicine_id,
+                            'quantity': form.cleaned_data.get('quantity')
+                        })
+
+                        # Cộng tổng giá
+                        total += medicine['price'] * form.cleaned_data.get('quantity')
+
+                # Cập nhật Visit với descriptions
+                db_handle['Visits'].update_one(
+                    {'visit_id': visit_id},
+                    {'$set': {'descriptions': descriptions}}
+                )
+
+                # Tạo bill mới
+                no = db_handle['Bills'].find().sort("bill_id", -1).limit(1)[0]['bill_id'] + 1
+
+                bill = {
+                    'bill_id': no,
+                    'medicines': medicines,
+                    'total': total
+                }
+
+                # Thêm bill mới vào collection Bills
+                db_handle['Bills'].insert_one(bill)
+
+                return redirect('home')
+        else:
+            # Nếu là GET, chỉ khởi tạo formset rỗng
+            formset = DescriptionFormSet()
+
+        return render(request, 'add_service.html', {'formset': formset, 'visit_id': visit_id, 'flag': 2, 'url': 'add_medicine'})
+    else:
+        return redirect('home')
 
 # def get_all_income(request):
 

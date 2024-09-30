@@ -5,7 +5,7 @@
     <title>Đăng ký khám bệnh</title>
 </head>
 <body>
-<form action="{% url 'add_visit' %}" method="post">
+<form action="add_visit" method="post">
     {% csrf_token %}
     {{ form.as_p }}
     

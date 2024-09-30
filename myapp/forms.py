@@ -1,5 +1,12 @@
 from django import forms
 from .models import *
+from pymongo import MongoClient
+
+
+def get_db_handle():
+    client = MongoClient('mongodb://localhost:27017/?authSource=clinic_db')
+    db_handle = client['clinic_db']
+    return db_handle, client
 
 
 class UserForm(forms.ModelForm):
@@ -118,6 +125,7 @@ class DiseaseForm(forms.ModelForm):
 
         return cleaned_data
 
+
 class MedicineForm(forms.ModelForm):
     class Meta:
         model = Medicine
@@ -215,5 +223,44 @@ class RegisterForm(forms.ModelForm):
             CID=cleaned_data.get('CID'),
         )
         cleaned_data['register'] = register
+
+        return cleaned_data
+
+
+def get_services():
+    db_handle, client = get_db_handle()
+    services = db_handle['Services'].find({})
+    return [(service["service_id"], service["name"]) for service in services]
+
+def get_medicines():
+    db_handle, client = get_db_handle()
+    medicines = db_handle['Medicines'].find({})
+    return [(medicine["medicine_id"], medicine["name"]) for medicine in medicines]
+
+
+class DescriptionForm(forms.Form):
+    service = forms.ChoiceField(
+        choices=get_services(),
+        label="Chọn dịch vụ", required=False
+    )
+    medicine = forms.ChoiceField(
+        choices=get_medicines(),
+        label="Chọn thuốc", required=False
+    )
+    quantity = forms.IntegerField(label="Số lượng")  # Thêm label cho trường quantity
+
+
+class Diagnose(forms.Form):
+    content = forms.CharField()
+    description = forms.CharField()
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        diagnose = Diagnose(
+            content=cleaned_data.get('content'),
+            description=cleaned_data.get('description'),
+        )
+        cleaned_data['diagnose'] = diagnose
 
         return cleaned_data

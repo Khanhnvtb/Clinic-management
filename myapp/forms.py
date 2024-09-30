@@ -2,6 +2,15 @@ from django import forms
 from .models import *
 
 
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = "__all__"
+        widgets = {
+            'role': forms.HiddenInput(),
+        }
+
+
 class DoctorForm(forms.ModelForm):
     class Meta:
         model = Doctor
@@ -41,6 +50,27 @@ class NurseForm(forms.ModelForm):
             'nurse_id': forms.HiddenInput(),
         }
 
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Create a Nurse instance from the cleaned data
+        nurse = Nurse(
+            user_name=cleaned_data.get('user_name'),
+            password=cleaned_data.get('password'),
+            nurse_id=cleaned_data.get('nurse_id'),
+            CID=cleaned_data.get('CID'),
+            name=cleaned_data.get('name'),
+            date_of_birth=cleaned_data.get('date_of_birth'),
+            address=cleaned_data.get('address'),
+            phone_number=cleaned_data.get('phone_number'),
+            qualification=cleaned_data.get('qualification'),
+            salary=cleaned_data.get('salary'),
+            bonus=cleaned_data.get('bonus'),
+        )
+        cleaned_data['nurse'] = nurse
+
+        return cleaned_data
+
 
 class PatientForm(forms.ModelForm):
     class Meta:
@@ -49,6 +79,22 @@ class PatientForm(forms.ModelForm):
         widgets = {
             'patient_id': forms.HiddenInput(),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Create a Patient instance from the cleaned data
+        patient = Patient(
+            patient_id=cleaned_data.get('patient_id'),
+            CID=cleaned_data.get('CID'),
+            name=cleaned_data.get('name'),
+            date_of_birth=cleaned_data.get('date_of_birth'),
+            address=cleaned_data.get('address'),
+            phone_number=cleaned_data.get('phone_number'),
+        )
+        cleaned_data['patient'] = patient
+
+        return cleaned_data
 
 
 class DiseaseForm(forms.ModelForm):
@@ -59,6 +105,18 @@ class DiseaseForm(forms.ModelForm):
             'disease_id': forms.HiddenInput(),
         }
 
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Create a Disease instance from the cleaned data
+        disease = Disease(
+            disease_id=cleaned_data.get('disease_id'),
+            name=cleaned_data.get('name'),
+            description=cleaned_data.get('description'),
+        )
+        cleaned_data['disease'] = disease
+
+        return cleaned_data
 
 class MedicineForm(forms.ModelForm):
     class Meta:
@@ -68,6 +126,20 @@ class MedicineForm(forms.ModelForm):
             'medicine_id': forms.HiddenInput(),
         }
 
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Create a Medicine instance from the cleaned data
+        medicine = Medicine(
+            medicine_id=cleaned_data.get('medicine_id'),
+            name=cleaned_data.get('name'),
+            description=cleaned_data.get('description'),
+            price=cleaned_data.get('price')
+        )
+        cleaned_data['medicine'] = medicine
+
+        return cleaned_data
+
 
 class ServiceForm(forms.ModelForm):
     class Meta:
@@ -76,6 +148,20 @@ class ServiceForm(forms.ModelForm):
         widgets = {
             'service_id': forms.HiddenInput(),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Create a Service instance from the cleaned data
+        service = Service(
+            service_id=cleaned_data.get('service_id'),
+            name=cleaned_data.get('name'),
+            description=cleaned_data.get('description'),
+            price=cleaned_data.get('price')
+        )
+        cleaned_data['service'] = service
+
+        return cleaned_data
 
 
 class BonusForm(forms.Form):
@@ -89,3 +175,45 @@ class IncomeForm(forms.Form):
     bonus = forms.Field(label='Thưởng')
     total = forms.FloatField(label='Tổng thu nhập')
     flag = forms.BooleanField(widget=forms.HiddenInput())
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+
+class VisitForm(forms.ModelForm):
+    class Meta:
+        model = Visit
+        fields = "__all__"
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Create a Visit instance from the cleaned data
+        visit = Visit(
+            visit_id=cleaned_data.get('visit_id'),
+            patient_id=cleaned_data.get('patient_id'),
+            CID=cleaned_data.get('CID'),
+            nurse_id=cleaned_data.get('nurse_id'),
+            diagnose=cleaned_data.get('diagnose'),
+            visit_date=cleaned_data.get('visit_date'),
+        )
+        cleaned_data['visit'] = visit
+
+        return cleaned_data
+
+
+class RegisterForm(forms.ModelForm):
+    class Meta:
+        model = Register
+        fields = "__all__"
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Create a Register instance from the cleaned data
+        register = Register(
+            CID=cleaned_data.get('CID'),
+        )
+        cleaned_data['register'] = register
+
+        return cleaned_data

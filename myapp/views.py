@@ -16,89 +16,299 @@ def get_db_handle():
 
 def login(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+        form = UserForm(request.POST)
+        if form.is_valid():
+            user_name = form.cleaned_data['user_name']
+            password = form.cleaned_data['password']
 
-        db_handle, client = get_db_handle()
-        user = db_handle['Users'].find_one({"username": username, "password": password})
-        client.close()
+            db_handle, client = get_db_handle()
+            user = db_handle['Users'].find_one({"user_name": user_name, "password": password})
 
-        if user:
-            if user['role'] == 1:
-                user_id = db_handle['Doctors'].find_one({"username": username})
-            elif user['role'] == 2:
-                user_id = db_handle['Nurses'].find_one({"username": username})
+            if user:
+                if user['role'] == 1:
+                    user_id = db_handle['Doctors'].find_one({"user_name": user_name})['doctor_id']
+                elif user['role'] == 2:
+                    user_id = db_handle['Nurses'].find_one({"user_name": user_name})['nurse_id']
+                else:
+                    user_id = 'admin'
+                # Lưu thông tin user vào session
+                request.session['user'] = {
+                    'user_id': user_id,
+                    'role': user['role'],
+                }
+                return redirect('home')
             else:
-                user_id = 'admin'
-            # Lưu thông tin user vào session
-            request.session['user'] = {
-                'user_id': user_id,
-                'role': user['role'],
-            }
-            return redirect('home')
-        else:
-            return HttpResponse("Đăng nhập thất bại. Vui lòng thử lại.")
-
-    return render(request, 'login.html')
+                storage = messages.get_messages(request)
+                storage.used = True
+                messages.add_message(request, messages.SUCCESS, "Đăng nhập thất bại. Vui lòng thử lại.")
+            client.close()
+    else:
+        form = UserForm()
+    return render(request, 'login.html', {'form': form})
 
 
 def logout(request):
     if 'user' in request.session:
-        del request.session['user']  # Xóa thông tin người dùng trong session
+        del request.session  # Xóa thông tin người dùng trong session
     return redirect('login')
 
 
 def add_doctor(request):
-    # if request.session['user']['role'] == 'admin':
+    if request.session['user']['role'] == 3:
         if request.method == "POST":
             form = DoctorForm(request.POST)
             if form.is_valid():
                 db_handle, client = get_db_handle()
                 doctor = form.cleaned_data['doctor']
-                if not db_handle['Doctors'].find_one({"CID": doctor.CID}):
-                    no = int(db_handle['Doctors'].find().sort("doctor_id", -1).limit(1)[0]['doctor_id'][1:]) + 1
-                    db_handle['Doctors'].insert_one({
-                        "user_name": doctor.user_name,
-                        "doctor_id": "D" + f"{no:03}",
-                        "CID": doctor.CID,
-                        "name": doctor.name,
-                        "date_of_birth": datetime.combine(doctor.date_of_birth, datetime.min.time()),
-                        "address": doctor.address,
-                        "phone_number": doctor.phone_number,
-                        "qualification": doctor.qualification,
-                        "specialization": [s for s in doctor.specialization.split()],
+                if db_handle['Users'].find_one({"username": doctor.user_name}):
+                    storage = messages.get_messages(request)
+                    storage.used = True
+                    messages.add_message(request, messages.SUCCESS, 'Tài khoản đã tồn tại')
+                else:
+                    if not db_handle['Doctors'].find_one({"CID": doctor.CID}):
+                        no = int(db_handle['Doctors'].find().sort("doctor_id", -1).limit(1)[0]['doctor_id'][1:]) + 1
+                        db_handle['Users'].insert_one({
+                            'user_name': doctor.user_name,
+                            'password': doctor.password,
+                            'role': 1,
+                        })
+                        db_handle['Doctors'].insert_one({
+                            "user_name": doctor.user_name,
+                            "doctor_id": "D" + f"{no:03}",
+                            "CID": doctor.CID,
+                            "name": doctor.name,
+                            "date_of_birth": datetime.combine(doctor.date_of_birth, datetime.min.time()),
+                            "address": doctor.address,
+                            "phone_number": doctor.phone_number,
+                            "qualification": doctor.qualification,
+                            "specialization": [s for s in doctor.specialization.split(',')],
+                        })
+                        storage = messages.get_messages(request)
+                        storage.used = True
+                        messages.add_message(request, messages.SUCCESS, 'Thêm bác sĩ thành công')
+                    else:
+                        storage = messages.get_messages(request)
+                        storage.used = True
+                        messages.add_message(request, messages.SUCCESS, 'Căn cước công dân đã tồn tại')
+                client.close()
+        else:
+            form = DoctorForm()
+    else:
+        return redirect('home')
+    return render(request, 'add.html', {'form': form, 'flag': 1})
+
+
+def add_nurse(request):
+    if request.session['user']['role'] == 3:
+        if request.method == "POST":
+            form = NurseForm(request.POST)
+            if form.is_valid():
+                db_handle, client = get_db_handle()
+                nurse = form.cleaned_data['nurse']
+                if db_handle['Users'].find_one({"username": nurse.user_name}):
+                    storage = messages.get_messages(request)
+                    storage.used = True
+                    messages.add_message(request, messages.SUCCESS, 'Tài khoản đã tồn tại')
+                else:
+                    if not db_handle['Nurses'].find_one({"CID": nurse.CID}):
+                        no = int(db_handle['Nurses'].find().sort("nurse_id", -1).limit(1)[0]['nurse_id'][1:]) + 1
+                        db_handle['Users'].insert_one({
+                            'user_name': nurse.user_name,
+                            'password': nurse.password,
+                            'role': 2,
+                        })
+                        db_handle['Nurses'].insert_one({
+                            "user_name": nurse.user_name,
+                            "nurse_id": "N" + f"{no:03}",
+                            "CID": nurse.CID,
+                            "name": nurse.name,
+                            "date_of_birth": datetime.combine(nurse.date_of_birth, datetime.min.time()),
+                            "address": nurse.address,
+                            "phone_number": nurse.phone_number,
+                            "qualification": nurse.qualification,
+                        })
+                        storage = messages.get_messages(request)
+                        storage.used = True
+                        messages.add_message(request, messages.SUCCESS, 'Thêm y tá thành công')
+
+                    else:
+                        storage = messages.get_messages(request)
+                        storage.used = True
+                        messages.add_message(request, messages.SUCCESS, 'Căn cước công dân đã tồn tại')
+                client.close()
+        else:
+            form = NurseForm()
+    else:
+        return redirect('home')
+    return render(request, 'add.html', {'form': form, 'flag': 2})
+
+
+def add_patient(request):
+    if request.session['user']['role'] == 3:
+        if request.method == "POST":
+            form = PatientForm(request.POST)
+            if form.is_valid():
+                db_handle, client = get_db_handle()
+                patient = form.cleaned_data['patient']
+                if db_handle['Users'].find_one({"username": patient.user_name}):
+                    storage = messages.get_messages(request)
+                    storage.used = True
+                    messages.add_message(request, messages.SUCCESS, 'Tài khoản đã tồn tại')
+                else:
+                    if not db_handle['Patients'].find_one({"CID": patient.CID}):
+                        no = int(db_handle['Patients'].find().sort("patient_id", -1).limit(1)[0]['patient_id'][1:]) + 1
+                        db_handle['Patients'].insert_one({
+                            "patient_id": "P" + f"{no:03}",
+                            "CID": patient.CID,
+                            "name": patient.name,
+                            "date_of_birth": datetime.combine(patient.date_of_birth, datetime.min.time()),
+                            "address": patient.address,
+                            "phone_number": patient.phone_number,
+                        })
+                        storage = messages.get_messages(request)
+                        storage.used = True
+                        messages.add_message(request, messages.SUCCESS, 'Thêm bệnh nhân thành công')
+                    else:
+                        storage = messages.get_messages(request)
+                        storage.used = True
+                        messages.add_message(request, messages.SUCCESS, 'Căn cước công dân đã tồn tại')
+                client.close()
+        else:
+            form = PatientForm()
+    else:
+        return redirect('home')
+    return render(request, 'add.html', {'form': form, 'flag': 3})
+
+
+def add_medicine(request):
+    if request.session['user']['role'] == 3:
+        if request.method == "POST":
+            form = MedicineForm(request.POST)
+            if form.is_valid():
+                db_handle, client = get_db_handle()
+                medicine = form.cleaned_data['medicine']
+                if not db_handle['Medicines'].find_one({"name": medicine.name}):
+                    no = int(db_handle['Medicines'].find().sort("medicine_id", -1).limit(1)[0]['medicine_id'][3:]) + 1
+                    db_handle['Medicines'].insert_one({
+                        "medicine_id": "MED" + f"{no:03}",
+                        "name": medicine.name,
+                        "description": medicine.description,
+                        "price": medicine.price,
                     })
                     storage = messages.get_messages(request)
                     storage.used = True
-                    messages.add_message(request, messages.SUCCESS, 'Thêm bác sĩ thành công')
-
+                    messages.add_message(request, messages.SUCCESS, 'Thêm thuốc thành công')
                 else:
                     storage = messages.get_messages(request)
                     storage.used = True
-                    messages.add_message(request, messages.SUCCESS, 'Căn cước công dân đã tồn tại')
-
+                    messages.add_message(request, messages.SUCCESS, 'Thuốc đã tồn tại')
+                client.close()
         else:
-            form = DoctorForm()
-    # else:
-    #     return render(request, 'home.html')
-        return render(request, 'add.html', {'form': form, 'flag': 1})
+            form = MedicineForm()
+    else:
+        return redirect('home')
+    return render(request, 'add.html', {'form': form, 'flag': 4})
 
 
-# def get_home(request):
-#     if request.method == "POST":
-#         form = TestForm(request.POST)
-#         if form.is_valid():
-#             db, client = get_db_handle()
-#             collection = db['Doctors']
-#             new_todo = {
-#                 "text": form.cleaned_data["text"],
-#                 "text1": form.cleaned_data['text1']
-#             }
-#             collection.insert_one(new_todo)
-#             client.close()
-#     else:
-#         form = TestForm()
-#     return render(request, 'home.html', {"form": form})
+def add_service(request):
+    if request.session['user']['role'] == 3:
+        if request.method == "POST":
+            form = ServiceForm(request.POST)
+            if form.is_valid():
+                db_handle, client = get_db_handle()
+                service = form.cleaned_data['service']
+                if not db_handle['Services'].find_one({"name": service.name}):
+                    no = db_handle['Service'].find().sort("service_id", -1).limit(1)[0]['service'] + 1
+                    db_handle['Service'].insert_one({
+                        "service_id": no,
+                        "name": service.name,
+                        "description": service.description,
+                        "price": service.price,
+                    })
+                    storage = messages.get_messages(request)
+                    storage.used = True
+                    messages.add_message(request, messages.SUCCESS, 'Thêm dịch vụ thành công')
+                else:
+                    storage = messages.get_messages(request)
+                    storage.used = True
+                    messages.add_message(request, messages.SUCCESS, 'Dịch vụ đã tồn tại')
+                client.close()
+        else:
+            form = ServiceForm()
+    else:
+        return redirect('home')
+    return render(request, 'add.html', {'form': form, 'flag': 5})
+
+
+def add_disease(request):
+    if request.session['user']['role'] == 3:
+        if request.method == "POST":
+            form = DiseaseForm(request.POST)
+            if form.is_valid():
+                db_handle, client = get_db_handle()
+                disease = form.cleaned_data['disease']
+                if not db_handle['Diseases'].find_one({"name": disease.name}):
+                    no = int(db_handle['Diseases'].find().sort("disease_id", -1).limit(1)[0]['disease_id'][2:]) + 1
+                    db_handle['Diseases'].insert_one({
+                        "disease_id": "DS" + f"{no:03}",
+                        "name": disease.name,
+                        "description": disease.description,
+                    })
+                    storage = messages.get_messages(request)
+                    storage.used = True
+                    messages.add_message(request, messages.SUCCESS, 'Thêm bệnh thành công')
+                else:
+                    storage = messages.get_messages(request)
+                    storage.used = True
+                    messages.add_message(request, messages.SUCCESS, 'Bệnh đã tồn tại')
+                client.close()
+        else:
+            form = DiseaseForm()
+    else:
+        return redirect('home')
+    return render(request, 'add.html', {'form': form, 'flag': 6})
+
+
+def get_home(request):
+    return render(request, 'home.html')
+
+
+def add_visit(request):
+    if request.session['user']['role'] == 2:
+        if request.method == "POST":
+            form = RegisterForm(request.POST)
+            if form.is_valid():
+                db_handle, client = get_db_handle()
+                register = form.cleaned_data['register']
+                no = db_handle['Visits'].find().sort("visit_id", -1).limit(1)[0]['visit_id'] + 1
+                patient = db_handle['Patients'].find_one({'CID': register.CID})
+                if not patient:
+                    storage = messages.get_messages(request)
+                    storage.used = True
+                    messages.add_message(request, messages.SUCCESS, 'Mời thêm mới bệnh nhân')
+                    redirect('add_patient')
+                else:
+                    db_handle['Visits'].insert_one({
+                        "visit_id": no,
+                        "nurse_id": request.session['user']['user_id'],
+                        "patient_id": patient['patient_id'],
+                        "visit_date": datetime.now()
+                    })
+                storage = messages.get_messages(request)
+                storage.used = True
+                messages.add_message(request, messages.SUCCESS, 'Đăng ký khám thành công')
+                client.close()
+                return redirect('add_visit')
+            else:
+                storage = messages.get_messages(request)
+                storage.used = True
+                messages.add_message(request, messages.SUCCESS, 'Mời nhập thông tin')
+        else:
+            form = RegisterForm()
+    else:
+        return redirect('home')
+    return render(request, 'add_visit.html', {'form': form})
+
 
 
 # def get_all_income(request):
@@ -107,20 +317,20 @@ def add_doctor(request):
 # def get_income(request, user_id):
 #     db_handle, client = get_db_handle()
 
-    # form = IncomeForm(request.POST)
-    # BonusFormSet = formset_factory(BonusForm, extra=1)
-    # bonus_formset = BonusFormSet(request.POST, prefix='bonus')  # prefix để nhóm các form
-    #
-    # if form.is_valid() and bonus_formset.is_valid():
-    #     # Xử lý dữ liệu
-    #     user_id = form.cleaned_data['user_id']
-    #     # Lưu dữ liệu bonus
-    #     for bonus_form in bonus_formset:
-    #         if bonus_form.cleaned_data:  # Chỉ xử lý form hợp lệ
-    #             description = bonus_form.cleaned_data['description']
-    #             money = bonus_form.cleaned_data['money']
-    #             # Lưu thông tin bonus vào cơ sở dữ liệu
-    #
-    # else:
-    #     form = IncomeForm(initial={'user_id': 'giá_trị_mặc_dịch'})
-    #     bonus_formset = BonusFormSet(queryset=BonusForm.objects.none(), prefix='bonus')
+# form = IncomeForm(request.POST)
+# BonusFormSet = formset_factory(BonusForm, extra=1)
+# bonus_formset = BonusFormSet(request.POST, prefix='bonus')  # prefix để nhóm các form
+#
+# if form.is_valid() and bonus_formset.is_valid():
+#     # Xử lý dữ liệu
+#     user_id = form.cleaned_data['user_id']
+#     # Lưu dữ liệu bonus
+#     for bonus_form in bonus_formset:
+#         if bonus_form.cleaned_data:  # Chỉ xử lý form hợp lệ
+#             description = bonus_form.cleaned_data['description']
+#             money = bonus_form.cleaned_data['money']
+#             # Lưu thông tin bonus vào cơ sở dữ liệu
+#
+# else:
+#     form = IncomeForm(initial={'user_id': 'giá_trị_mặc_dịch'})
+#     bonus_formset = BonusFormSet(queryset=BonusForm.objects.none(), prefix='bonus')

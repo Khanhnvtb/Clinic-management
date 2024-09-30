@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Show</title>
+</head>
+<body>
+<div>
+    <!--Bác sĩ-->
+    {% if flag == 1 %}
+        {{ form.as_p }}
+        <!--Y tá-->
+    {% elif flag == 2 %}
+        {{ form.as_p }}
+        <!--Bệnh nhân-->
+    {% elif flag == 3 %}
+        {{ form.as_p }}
+        <!--Thuốc-->
+    {% elif flag == 4 %}
+        {{ form.as_p }}
+        <!--Dịch vụ-->
+    {% elif flag == 5 %}
+        {{ form.as_p }}
+        <!--Bệnh-->
+    {% elif flag == 6 %}
+        {{ form.as_p }}
+    {% endif %}
+</div>
+</body>
+</html>

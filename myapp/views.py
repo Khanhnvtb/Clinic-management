@@ -359,7 +359,8 @@ def add_service(request, visit_id):
             # Nếu là GET, chỉ khởi tạo formset rỗng
             formset = DescriptionFormSet()
 
-        return render(request, 'add_service.html', {'formset': formset, 'visit_id': visit_id, 'flag': 1, 'url': 'add_service'})
+        return render(request, 'add_service.html',
+                      {'formset': formset, 'visit_id': visit_id, 'flag': 1, 'url': 'add_service'})
     else:
         return redirect('home')
 
@@ -420,7 +421,8 @@ def add_medicine(request, visit_id):
             # Nếu là GET, chỉ khởi tạo formset rỗng
             formset = DescriptionFormSet()
 
-        return render(request, 'add_service.html', {'formset': formset, 'visit_id': visit_id, 'flag': 2, 'url': 'add_medicine'})
+        return render(request, 'add_service.html',
+                      {'formset': formset, 'visit_id': visit_id, 'flag': 2, 'url': 'add_medicine'})
     else:
         return redirect('home')
 
@@ -457,108 +459,107 @@ def get_range_date(day):
 
 
 def get_all_income(request):
-    if request.session['user']['role'] == 3:
-        if request.method == "POST":
-            input_month = request.POST.get('input_month')
-            try:
-                # Chọn thời gian được nhận thưởng
-                day, is_current_month = get_date(input_month)
-                start_date, end_date = get_range_date(day)
-                db_handle, client = get_db_handle()
-                incomes = list(db_handle['Incomes'].find({"month": input_month}, {'flag': True}))
-                if incomes:
-                    client.close()
-                else:
-                    user_names = db_handle['Users'].find({"role": {"$ne": 3}}, {"_id": 0, "user_name": 1})
-                    user_names = [user_name['user_name'] for user_name in user_names]
-                    doctors = db_handle['Doctors'].find({"user_name": {"$in": user_names}},
-                                                        {"_id": 0, "doctor_id": 1, "salary": 1, "bonus": 1})
-                    nurses = db_handle['Nurses'].find({"user_name": {"$in": user_names}},
-                                                      {"_id": 0, "nurse_id": 1, "salary": 1, "bonus": 1})
-                    # Lấy ra tất cả lần khám bệnh nằm trong khoảng yêu cầu
-                    visits = db_handle['Visits'].find({"visit_date": {"$gte": start_date, "$lte": end_date}},{"_id": 0, "visit_id": 1})
-                    visit_ids = [visit["visit_id"] for visit in visits]
-
-                    incomes = []
-
-                    for doctor in doctors:
-                        income = {
-                            "user_id": doctor['doctor_id'],
-                            "month": input_month,
-                            "salary": doctor['salary'],
-                            "bonus": [
-                            ],
-                            "total": doctor['salary'],
-                            "flag": True
-                        }
-                        bonus = doctor['bonus']
-                        histories = db_handle['MedicalHistory'].find({"doctor_id": doctor["doctor_id"]})
-                        for history in histories:
-                            # Nếu lần khám cuối cùng nằm trong khoảng thời gian được nhận thưởng
-                            if history['visit_ids'][-1] in visit_ids:
-                                disease = db_handle['Diseases'].find_one({"disease_id": history["disease_id"]},)['name']
-                                patient = db_handle['Patients'].find_one({"patient_id": history["patient_id"]},)['name']
-                                income['bonus'].append({
-                                    'description': f'Chữa khỏi bệnh {disease} cho bệnh nhân {patient}',
-                                    'money': bonus,
-                                })
-                                income['total'] += bonus
-                        incomes.append(income)
-
-                    for nurse in nurses:
-                        income = {
-                            "user_id": nurse['nurse_id'],
-                            "month": input_month,
-                            "salary": nurse['salary'],
-                            "bonus": [
-                            ],
-                            "total": nurse['salary'],
-                            "flag": True
-                        }
-                        bonus = nurse['bonus']
-                        histories = db_handle['MedicalHistory'].find({"nurse_ids": {"$in": [nurse['nurse_id']]}})
-                        for history in histories:
-                            # Nếu lần khám cuối cùng nằm trong khoảng thời gian được nhận thưởng
-                            if history['visit_ids'][-1] in visit_ids:
-                                disease = db_handle['Diseases'].find_one({"disease_id": history["disease_id"]}, )['name']
-                                patient = db_handle['Patients'].find_one({"patient_id": history["patient_id"]}, )['name']
-                                income['bonus'].append({
-                                    'description': f'Tham gia chữa khỏi bệnh {disease} cho bệnh nhân {patient}',
-                                    'money': bonus,
-                                })
-                                income['total'] += bonus
-                        incomes.append(income)
-                    if is_current_month == 0:
-                        db_handle['Incomes'].insert_many(incomes)
+    if request.method == "POST":
+        input_month = request.POST.get('input_month')
+        try:
+            # Chọn thời gian được nhận thưởng
+            day, is_current_month = get_date(input_month)
+            start_date, end_date = get_range_date(day)
+            db_handle, client = get_db_handle()
+            if request.session['user']['role'] == 3:
+                user_names = db_handle['Users'].find({"role": {"$ne": 3}}, {"_id": 0, "user_name": 1})
+                user_names = [user_name['user_name'] for user_name in user_names]
+                incomes = list(db_handle['Incomes'].find(
+                    {"month": input_month, 'flag': True},
+                    {"_id": 0, "user_id": 1, "month": 1, "salary": 1, "bonus": 1, "total": 1}
+                ))
+            elif request.session['user']['role'] == 1:
+                user_names = db_handle['Doctors'].find({"doctor_id": request.session['user']['user_id']},
+                                                           {"_id": 0, "user_name": 1})
+                user_names = [user_name['user_name'] for user_name in user_names]
+                incomes = list(db_handle['Incomes'].find(
+                    {"month": input_month,
+                     'user_id': request.session['user']['user_id'], 'flag': True},
+                    {"_id": 0, "user_id": 1, "month": 1, "salary": 1, "bonus": 1, "total": 1}
+                ))
+            else:
+                user_names = db_handle['Nurses'].find({"nurse_id": request.session['user']['user_id']},
+                                                          {"_id": 0, "user_name": 1})
+                user_names = [user_name['user_name'] for user_name in user_names]
+                incomes = list(db_handle['Incomes'].find(
+                    {"month": input_month,
+                     'user_id': request.session['user']['user_id'], 'flag': True},
+                    {"_id": 0, "user_id": 1, "month": 1, "salary": 1, "bonus": 1, "total": 1}
+                ))
+            if incomes:
                 client.close()
-            except Exception as e:
-                storage = messages.get_messages(request)
-                storage.used = True
-                messages.add_message(request, messages.SUCCESS, "Vui lòng nhập đúng định dạng mmYYYY.")
-                return redirect('get_all_income')
-        else:
-            incomes = []
+            else:
+                doctors = db_handle['Doctors'].find({"user_name": {"$in": user_names}},
+                                                    {"_id": 0, "doctor_id": 1, "salary": 1, "bonus": 1})
+                nurses = db_handle['Nurses'].find({"user_name": {"$in": user_names}},
+                                                  {"_id": 0, "nurse_id": 1, "salary": 1, "bonus": 1})
+                # Lấy ra tất cả lần khám bệnh nằm trong khoảng yêu cầu
+                visits = db_handle['Visits'].find({"visit_date": {"$gte": start_date, "$lte": end_date}},
+                                                  {"_id": 0, "visit_id": 1})
+                visit_ids = [visit["visit_id"] for visit in visits]
+
+                incomes = []
+
+                for doctor in doctors:
+                    income = {
+                        "user_id": doctor['doctor_id'],
+                        "month": input_month,
+                        "salary": doctor['salary'],
+                        "bonus": [
+                        ],
+                        "total": doctor['salary'],
+                        "flag": True
+                    }
+                    bonus = doctor['bonus']
+                    histories = db_handle['MedicalHistory'].find({"doctor_id": doctor["doctor_id"]})
+                    for history in histories:
+                        # Nếu lần khám cuối cùng nằm trong khoảng thời gian được nhận thưởng
+                        if history['visit_ids'][-1] in visit_ids:
+                            disease = db_handle['Diseases'].find_one({"disease_id": history["disease_id"]}, )['name']
+                            patient = db_handle['Patients'].find_one({"patient_id": history["patient_id"]}, )['name']
+                            income['bonus'].append({
+                                'description': f'Chữa khỏi bệnh {disease} cho bệnh nhân {patient}',
+                                'money': bonus,
+                            })
+                            income['total'] += bonus
+                    incomes.append(income)
+
+                for nurse in nurses:
+                    income = {
+                        "user_id": nurse['nurse_id'],
+                        "month": input_month,
+                        "salary": nurse['salary'],
+                        "bonus": [
+                        ],
+                        "total": nurse['salary'],
+                        "flag": True
+                    }
+                    bonus = nurse['bonus']
+                    histories = db_handle['MedicalHistory'].find({"nurse_ids": {"$in": [nurse['nurse_id']]}})
+                    for history in histories:
+                        # Nếu lần khám cuối cùng nằm trong khoảng thời gian được nhận thưởng
+                        if history['visit_ids'][-1] in visit_ids:
+                            disease = db_handle['Diseases'].find_one({"disease_id": history["disease_id"]}, )['name']
+                            patient = db_handle['Patients'].find_one({"patient_id": history["patient_id"]}, )['name']
+                            income['bonus'].append({
+                                'description': f'Tham gia chữa khỏi bệnh {disease} cho bệnh nhân {patient}',
+                                'money': bonus,
+                            })
+                            income['total'] += bonus
+                    incomes.append(income)
+                if is_current_month == 0 and request.session['user']['role'] == 3:
+                    db_handle['Incomes'].insert_many(incomes)
+            client.close()
+        except Exception as e:
+            storage = messages.get_messages(request)
+            storage.used = True
+            messages.add_message(request, messages.SUCCESS, "Vui lòng nhập đúng định dạng mmYYYY.")
+            return redirect('get_all_income')
     else:
-        return redirect('home')
+        incomes = []
     return render(request, 'get_all_income.html', {'incomes': incomes})
-
-# def get_income(request, user_id):
-#     db_handle, client = get_db_handle()
-
-# form = IncomeForm(request.POST)
-# BonusFormSet = formset_factory(BonusForm, extra=1)
-# bonus_formset = BonusFormSet(request.POST, prefix='bonus')  # prefix để nhóm các form
-#
-# if form.is_valid() and bonus_formset.is_valid():
-#     # Xử lý dữ liệu
-#     user_id = form.cleaned_data['user_id']
-#     # Lưu dữ liệu bonus
-#     for bonus_form in bonus_formset:
-#         if bonus_form.cleaned_data:  # Chỉ xử lý form hợp lệ
-#             description = bonus_form.cleaned_data['description']
-#             money = bonus_form.cleaned_data['money']
-#             # Lưu thông tin bonus vào cơ sở dữ liệu
-#
-# else:
-#     form = IncomeForm(initial={'user_id': 'giá_trị_mặc_dịch'})
-#     bonus_formset = BonusFormSet(queryset=BonusForm.objects.none(), prefix='bonus')

@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+from operator import truediv
 
 from django.contrib import messages
 from django.shortcuts import render, redirect
@@ -423,8 +424,122 @@ def add_medicine(request, visit_id):
     else:
         return redirect('home')
 
-# def get_all_income(request):
 
+def get_date(input_month):
+    month = int(input_month[:2])
+    year = int(input_month[2:])
+
+    current_date = datetime.now()
+    current_month = current_date.month
+    current_year = current_date.year
+
+    if month == current_month and year == current_year:
+        return current_date, True
+    else:
+        first_day_of_month = datetime(year=year, month=month, day=1)
+
+        next_month = first_day_of_month.replace(day=28) + timedelta(days=4)
+        last_day_of_month = next_month - timedelta(days=next_month.day)
+
+        return last_day_of_month, False
+
+
+def get_range_date(day, is_current_month):
+    first_day_of_current_month = day.replace(day=1)
+    start_date = first_day_of_current_month - timedelta(days=1)
+    start_date = start_date.replace(day=1)
+
+    end_date = day - timedelta(days=30)
+
+    if start_date > end_date:
+        start_date = end_date
+    return start_date, end_date, is_current_month
+
+
+def get_all_income(request, input_month=None):
+    if request.session['user']['role'] == 3:
+        if request.method == "POST":
+            try:
+                # Chọn thời gian được nhận thưởng
+                start_date, end_date, is_current_month = get_range_date(get_date(input_month))
+                db_handle, client = get_db_handle()
+                incomes = db_handle['Incomes'].find({"month": input_month}, {'flag': True})
+                if incomes:
+                    client.close()
+                else:
+                    user_names = db_handle.find({"role": {"$ne": 3}}, {"_id": 0, "user_name": 1})
+                    user_names = [user_name['user_name'] for user_name in user_names]
+                    doctors = db_handle['Doctors'].find({"user_name": {"$in": user_names}},
+                                                        {"_id": 0, "doctor_id": 1, "salary": 1, "bonus": 1})
+                    nurses = db_handle['Nurses'].find({"user_name": {"$in": user_names}},
+                                                      {"_id": 0, "nurse_id": 1, "salary": 1, "bonus": 1})
+                    # Lấy ra tất cả lần khám bệnh nằm trong khoảng yêu cầu
+                    visits = db_handle['Visits'].find({"visit_date": {"$gte": start_date, "$lte": end_date}},{"_id": 0, "visit_id": 1})
+                    visit_ids = [visit["visit_id"] for visit in visits]
+
+                    incomes = []
+
+                    for doctor in doctors:
+                        income = {
+                            "user_id": doctor['doctor_id'],
+                            "month": input_month,
+                            "salary": doctor['salary'],
+                            "bonus": [
+                            ],
+                            "total": doctor['salary'],
+                            "flag": True
+                        }
+                        bonus = doctor['bonus']
+                        histories = db_handle['Histories'].find({"doctor_id": doctor["doctor_id"]})
+                        for history in histories:
+                            # Nếu lần khám cuối cùng nằm trong khoảng thời gian được nhận thưởng
+                            if history['visit_ids'][-1] in visit_ids:
+                                disease = db_handle['Disases'].find_one({"disease_id": history["disease_id"]},)['name']
+                                patient = db_handle['Patients'].find_one({"patient_id": history["patient_id"]},)['name']
+                                income['bonus'].append({
+                                    'description': f'Chữa khỏi bệnh {disease} cho bệnh nhân {patient}',
+                                    'money': bonus,
+                                })
+                                income['total'] += bonus
+                        incomes.append(income)
+
+                    for nurse in nurses:
+                        income = {
+                            "user_id": nurse['nurse_id'],
+                            "month": input_month,
+                            "salary": nurse['salary'],
+                            "bonus": [
+                            ],
+                            "total": nurse['salary'],
+                            "flag": True
+                        }
+                        bonus = nurse['bonus']
+                        histories = db_handle['Histories'].find({"nurse_ids": {'$in': nurse["nurse_id"]}})
+                        for history in histories:
+                            # Nếu lần khám cuối cùng nằm trong khoảng thời gian được nhận thưởng
+                            if history['visit_ids'][-1] in visit_ids:
+                                disease = db_handle['Disases'].find_one({"disease_id": history["disease_id"]}, )['name']
+                                patient = db_handle['Patients'].find_one({"patient_id": history["patient_id"]}, )['name']
+                                income['bonus'].append({
+                                    'description': f'Chữa khỏi bệnh {disease} cho bệnh nhân {patient}',
+                                    'money': bonus,
+                                })
+                                income['total'] += bonus
+                        incomes.append(income)
+                    if not is_current_month:
+                        db_handle['Histories'].insert_many(incomes)
+                client.close()
+                result = incomes
+            except Exception as e:
+                storage = messages.get_messages(request)
+                storage.used = True
+                messages.add_message(request, messages.SUCCESS, "Vui lòng nhập đúng định dạng mmYYYY.")
+                return redirect('get_all_income')
+        else:
+            result = MonthForm()
+    else:
+        return redirect('home')
+    return render(request, 'get_all_income.html', {'result': result})
 
 # def get_income(request, user_id):
 #     db_handle, client = get_db_handle()

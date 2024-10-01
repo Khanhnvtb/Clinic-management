@@ -12,7 +12,11 @@ urlpatterns = [
     path('login', views.login, name='login'),
     path('logout', views.logout, name='logout'),
     path('add_visit', views.add_visit, name='add_visit'),
-    path('add_service/<int:visit_id>', views.add_service, name='add_service'),
-    path('add_medicine/<int:visit_id>', views.add_medicine, name='add_medicine'),
+    path('add_services/<int:visit_id>', views.add_services, name='add_services'),
+    path('patient_care', views.patient_care, name='patient_care'),
+    path('add_medicines/<int:visit_id>', views.add_medicines, name='add_medicines'),
     path('get_all_income', views.get_all_income, name='get_all_income'),
+    path('get_revenue', views.get_revenue, name='get_revenue'),
+    path('examination', views.examination, name='examination'),
+    path('diagnose/<int:visit_id>', views.diagnose, name='diagnose'),
 ]

@@ -126,6 +126,7 @@ def gen_data():
                         "money": money
                     })
                     total += money
+            bill["total"] = total
             bills.append(bill)
             visits.append(visit)
         vs_date.sort(key=lambda x: x['visit_date'])

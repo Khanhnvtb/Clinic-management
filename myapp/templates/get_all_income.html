@@ -1,13 +1,13 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách thu nhập</title>
+{% extends 'base.html' %}
+
+{% block title %}Tính lương{% endblock %}
+
+{% block style %}
     <style>
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
 
         table, th, td {
@@ -19,14 +19,28 @@
             text-align: left;
         }
 
+        /* CSS cho bảng con (bảng bonus) */
+        .bonus-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .bonus-table th, .bonus-table td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: left;
+        }
     </style>
-</head>
-<body>
+{% endblock style %}
+
+{% block content %}
 <form method="post" action="{% url 'get_all_income' %}">
     {% csrf_token %}
+    <p></p>
     <input type="text" name="input_month" placeholder="Nhập tháng" required>
     <button type="submit">Tính lương</button>
 </form>
+
 {% if incomes %}
 <h1>Danh sách thu nhập</h1>
 
@@ -70,5 +84,4 @@
     </tbody>
 </table>
 {% endif %}
-</body>
-</html>
+{% endblock content %}

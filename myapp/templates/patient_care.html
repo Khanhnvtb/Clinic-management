@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Chăm sóc bệnh nhân{% endblock %}
+
+{% block content %}
+<form method="post" action="{% url 'patient_care' %}">
+    {% csrf_token %}
+    <input type="text" name="visit_id" placeholder="Nhập mã khám bệnh" required>
+    <button type="submit">Chăm sóc bệnh nhân</button>
+</form>
+{% endblock %}

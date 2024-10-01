@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Doanh thu{% endblock %}
+
+{% block style %}
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .total-row {
+            font-weight: bold;
+        }
+    </style>
+{% endblock style %}
+
+{% block content %}
+<form method="post" action="{% url 'get_revenue' %}">
+    {% csrf_token %}
+    <p></p>
+    <input type="text" name="input_month" placeholder="Nhập tháng" required>
+    <button type="submit">Tính doanh thu</button>
+</form>
+
+{% if result %}
+<h1>Doanh thu</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Mã hóa đơn</th>
+            <th>Tổng cộng</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for bill in result.bills %}
+        <tr>
+            <td>{{ bill.bill_id }}</td>
+            <td>{{ bill.total }}</td>
+        </tr>
+        {% endfor %}
+        <tr class="total-row">
+            <td>Tổng doanh thu</td>
+            <td>{{ result.revenue }}</td>
+        </tr>
+    </tbody>
+</table>
+{% endif %}
+{% endblock content %}

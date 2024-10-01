@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm dịch vụ</title>
+{% extends 'base.html' %}
+
+{% block title %}Thêm dịch vụ{% endblock %}
+{% block style %}
     <style>
         .error {
             color: red;
@@ -15,11 +13,12 @@
     </style>
     <!-- Thêm thư viện jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-</head>
-<body>
+{% endblock style %}
+{% block content %}
+
 <h1>Thêm dịch vụ</h1>
 <form id="descriptionFormSet"
-      action="{% if flag == 2 %}{% url 'add_medicine' visit_id%}{% else %}{% url 'add_service' visit_id %}{% endif %}"
+      action="{% if flag == 2 %}{% url 'add_medicines' visit_id%}{% else %}{% url 'add_services' visit_id %}{% endif %}"
       method="post">
     {% csrf_token %}
     {{ formset.management_form }}
@@ -48,64 +47,18 @@
                 <div class="error">{{ form.quantity.errors }}</div>
                 {% endif %}
             </div>
-            <button type="button" class="remove-form" onclick="removeForm(this)">-</button>
+            <button type="button" class="remove-form">-</button>
         </div>
         {% endfor %}
     </div>
 
-    <button type="button" id="addForm" onclick="addForm()">+</button>
+    <button type="button" id="addForm">+</button>
     <button type="submit">Submit</button>
 </form>
 
 <script>
-    var formsetContainer = document.getElementById('formsetContainer');
-    var formCount = {
-    {
-        formset.total_form_count
-    }
-    }
-    ; // Số lượng form hiện tại
-
-    function addForm() {
-        // Tăng số lượng form
-        formCount++;
-
-        // Tạo một bản sao của form đầu tiên
-        var newForm = formsetContainer.children[0].cloneNode(true);
-
-        // Cập nhật các id và name cho trường trong form mới
-        var regex = new RegExp('form-(\\d+)', 'g');
-        newForm.innerHTML = newForm.innerHTML.replace(regex, 'form-' + formCount);
-
-        // Xóa dữ liệu trong các trường của form mới
-        var inputs = newForm.getElementsByTagName('input');
-        for (var i = 0; i < inputs.length; i++) {
-            inputs[i].value = '';
-        }
-
-        // Thêm form mới vào container
-        formsetContainer.appendChild(newForm);
-    }
-
-    function removeForm(button) {
-        if (formCount > 1) {
-            button.parentElement.remove();
-            formCount--; // Giảm số lượng form
-        } else {
-            alert("Bạn phải có ít nhất một form.");
-        }
-    }
-</script>
-
-
-<script>
     $(document).ready(function () {
-        let formCount = {
-        {
-            formset.total_form_count
-        }
-    }
-        ; // Số lượng form hiện tại
+        let formCount = {{ formset.total_form_count }}; // Số lượng form hiện tại
         let formsetContainer = $('#formsetContainer');
         let formRegex = RegExp(`form-(\\d+)`, 'g');
 
@@ -138,5 +91,4 @@
         });
     });
 </script>
-</body>
-</html>
+{% endblock %}

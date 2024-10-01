@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
-from operator import truediv
 
+from Tools.scripts.findlinksto import visit
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from .forms import *
@@ -303,7 +303,21 @@ def add_visit(request):
     return render(request, 'add_visit.html', {'form': form})
 
 
-def add_service(request, visit_id):
+def examination(request):
+    if request.session['user']['role'] == 3:
+        return redirect('home')
+    else:
+        if request.method == "POST":
+            visit_id = request.POST.get('visit_id')
+            if request.session['user']['role'] == 1:
+                return redirect('diagnose', visit_id=visit_id)
+            else:
+                return redirect('add_services', visit_id=visit_id)
+        else:
+            return render(request, 'examination.html')
+
+
+def add_services(request, visit_id):
     if request.session['user']['role'] == 2:
         # Tạo formset với 1 form trống
         DescriptionFormSet = formset_factory(DescriptionForm, extra=2)
@@ -359,13 +373,24 @@ def add_service(request, visit_id):
             # Nếu là GET, chỉ khởi tạo formset rỗng
             formset = DescriptionFormSet()
 
-        return render(request, 'add_service.html',
-                      {'formset': formset, 'visit_id': visit_id, 'flag': 1, 'url': 'add_service'})
+        return render(request, 'add_services.html',
+                      {'formset': formset, 'visit_id': visit_id, 'flag': 1, 'url': 'add_services'})
     else:
         return redirect('home')
 
 
-def add_medicine(request, visit_id):
+def patient_care(request):
+    if request.session['user']['role'] == 2:
+        if request.method == "POST":
+            visit_id = request.POST.get('visit_id')
+            return redirect('add_medicines', visit_id=visit_id)
+        else:
+            return render(request, 'patient_care.html')
+    else:
+        return redirect('home')
+
+
+def add_medicines(request, visit_id):
     if request.session['user']['role'] == 2:
         # Tạo formset với 1 form trống
         DescriptionFormSet = formset_factory(DescriptionForm, extra=2)
@@ -421,8 +446,8 @@ def add_medicine(request, visit_id):
             # Nếu là GET, chỉ khởi tạo formset rỗng
             formset = DescriptionFormSet()
 
-        return render(request, 'add_service.html',
-                      {'formset': formset, 'visit_id': visit_id, 'flag': 2, 'url': 'add_medicine'})
+        return render(request, 'add_services.html',
+                      {'formset': formset, 'visit_id': visit_id, 'flag': 2, 'url': 'add_medicines'})
     else:
         return redirect('home')
 
@@ -475,7 +500,7 @@ def get_all_income(request):
                 ))
             elif request.session['user']['role'] == 1:
                 user_names = db_handle['Doctors'].find({"doctor_id": request.session['user']['user_id']},
-                                                           {"_id": 0, "user_name": 1})
+                                                       {"_id": 0, "user_name": 1})
                 user_names = [user_name['user_name'] for user_name in user_names]
                 incomes = list(db_handle['Incomes'].find(
                     {"month": input_month,
@@ -484,7 +509,7 @@ def get_all_income(request):
                 ))
             else:
                 user_names = db_handle['Nurses'].find({"nurse_id": request.session['user']['user_id']},
-                                                          {"_id": 0, "user_name": 1})
+                                                      {"_id": 0, "user_name": 1})
                 user_names = [user_name['user_name'] for user_name in user_names]
                 incomes = list(db_handle['Incomes'].find(
                     {"month": input_month,
@@ -563,3 +588,44 @@ def get_all_income(request):
     else:
         incomes = []
     return render(request, 'get_all_income.html', {'incomes': incomes})
+
+
+def get_revenue(request):
+    if request.session['user']['role'] == 3:
+        revenue = 0
+        if request.method == 'POST':
+            db_handle, clinet = get_db_handle()
+            input_month = request.POST.get('input_month')
+            try:
+                month = int(input_month[:2])
+                year = int(input_month[2:])
+                first_day_of_month = datetime(year=year, month=month, day=1)
+
+                next_month = first_day_of_month.replace(day=28) + timedelta(days=4)
+                last_day_of_month = next_month - timedelta(days=next_month.day)
+                bill_ids = []
+                visits = db_handle['Visits'].find({"visit_date": {"$gte": first_day_of_month, "$lte": last_day_of_month}},
+                                                  {"_id": 0, "bill_ids": 1})
+                for visit in visits:
+                    bill_ids += visit['bill_ids']
+                bills = list(db_handle['Bills'].find({"bill_id": {"$in": bill_ids}},{"_id": 0, "bill_id": 1, "total": 1}))
+                for bill in bills:
+                    revenue += bill['total']
+                result = {
+                    'bills': bills,
+                    'revenue': revenue
+                }
+            except Exception as e:
+                storage = messages.get_messages(request)
+                storage.used = True
+                messages.add_message(request, messages.SUCCESS, "Vui lòng nhập đúng định dạng mmYYYY.")
+                return redirect('get_revenue')
+        else:
+            result = {}
+    return render(request, 'get_revenue.html', {'result': result})
+
+
+def diagnose(request, visit_id):
+    pass
+
+# def get_history(request):

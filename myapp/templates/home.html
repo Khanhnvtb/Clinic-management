@@ -1,11 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Home</title>
-</head>
-<body>
-<p>Chào mừng bạn</p>
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block title %}Trang chủ{% endblock %}
+
+{% block content %}
+<nav>
+    <div class="dropdown">
+        <button>Chức năng</button>
+        <div class="dropdown-content">
+            <a href="{% url 'add_doctor' %}">Thêm bác sĩ</a>
+            <a href="{% url 'add_nurse' %}">Thêm y tá</a>
+            <a href="{% url 'add_service' %}">Thêm dịch vụ</a>
+            <a href="{% url 'add_medicine' %}">Thêm thuốc</a>
+            <a href="{% url 'add_disease' %}">Thêm bệnh</a>
+        </div>
+    </div>
+
+    <div class="button-group">
+        <a href="{% url 'add_visit' %}">
+            <button>Đăng ký khám bệnh</button>
+        </a>
+        <a href="{% url 'examination' %}">
+            <button>Khám bệnh</button>
+        </a>
+        <a href="{% url 'patient_care' %}">
+            <button>Chăm sóc bệnh nhân</button>
+        </a>
+        <a href="{% url 'get_all_income' %}">
+            <button>Tính lương</button>
+        </a>
+        <a href="{% url 'get_revenue' %}">
+            <button>Tính doanh thu</button>
+        </a>
+    </div>
+</nav>
+{% endblock %}

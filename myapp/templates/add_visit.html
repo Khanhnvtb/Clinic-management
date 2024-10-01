@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Đăng ký khám bệnh</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block title %}Đăng ký khám bệnh{% endblock %}
+
+{% block content %}
 <form action="add_visit" method="post">
     {% csrf_token %}
     {{ form.as_p }}
@@ -14,5 +12,4 @@
     </div>
 </form>
 
-</body>
-</html>
+{% endblock %}

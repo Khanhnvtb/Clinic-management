@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách thu nhập</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+    </style>
+</head>
+<body>
+<form method="post" action="{% url 'get_all_income' %}">
+    {% csrf_token %}
+    <input type="text" name="input_month" placeholder="Nhập tháng" required>
+    <button type="submit">Tính lương</button>
+</form>
+{% if incomes %}
+<h1>Danh sách thu nhập</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>User ID</th>
+        <th>Month</th>
+        <th>Salary</th>
+        <th>Bonus</th>
+        <th>Total</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for income in incomes %}
+    <tr>
+        <td>{{ income.user_id }}</td>
+        <td>{{ income.month }}</td>
+        <td>{{ income.salary }}</td>
+        <td>
+            <table class="bonus-table">
+                <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Money</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for bonus_item in income.bonus %}
+                <tr>
+                    <td>{{ bonus_item.description }}</td>
+                    <td>{{ bonus_item.money }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </td>
+        <td>{{ income.total }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+</body>
+</html>

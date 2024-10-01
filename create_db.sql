@@ -4620,6 +4620,111 @@ db.Nurses.updateMany(
     { $set: { salary: 5000000, bonus: 200000 } }
 );
 
+db.Diseases.insertMany([
+    {"disease_id": "DIS051", "name": "Bệnh cúm", "description": "Bệnh do virus cúm gây ra, gây sốt, ho, đau cơ."},
+    {
+        "disease_id": "DIS052",
+        "name": "Cảm lạnh",
+        "description": "Bệnh nhiễm trùng nhẹ ở đường hô hấp, thường do virus."
+    },
+    {"disease_id": "DIS053", "name": "Viêm phổi", "description": "Nhiễm trùng ở phổi, gây khó thở và ho."},
+    {"disease_id": "DIS054", "name": "Hen suyễn", "description": "Bệnh mãn tính ảnh hưởng đến đường thở, gây khó thở."},
+    {
+        "disease_id": "DIS055",
+        "name": "Viêm gan B",
+        "description": "Nhiễm virus viêm gan B, có thể dẫn đến bệnh gan mãn tính."
+    },
+    {"disease_id": "DIS056", "name": "Đau dạ dày", "description": "Cảm giác đau hoặc khó chịu ở vùng dạ dày."},
+    {"disease_id": "DIS057", "name": "Tiểu đường", "description": "Bệnh chuyển hóa gây ra lượng đường trong máu cao."},
+    {
+        "disease_id": "DIS058",
+        "name": "Huyết áp cao",
+        "description": "Tình trạng sức khỏe mãn tính có thể gây ra các vấn đề tim mạch."
+    },
+    {"disease_id": "DIS059", "name": "Viêm khớp", "description": "Bệnh viêm các khớp, gây đau và cứng khớp."},
+    {
+        "disease_id": "DIS060",
+        "name": "Bệnh tim",
+        "description": "Các vấn đề về tim mạch, có thể gây đau ngực hoặc khó thở."
+    },
+    {
+        "disease_id": "DIS061",
+        "name": "Suy tim",
+        "description": "Tình trạng khi tim không bơm đủ máu để đáp ứng nhu cầu cơ thể."
+    },
+    {"disease_id": "DIS062", "name": "Bệnh trĩ", "description": "Sưng và viêm ở tĩnh mạch hậu môn."},
+    {"disease_id": "DIS063", "name": "Viêm loét dạ dày", "description": "Sự xuất hiện của các vết loét trong dạ dày."},
+    {"disease_id": "DIS064", "name": "Bệnh gút", "description": "Tình trạng viêm khớp do tăng axit uric trong máu."},
+    {
+        "disease_id": "DIS065",
+        "name": "Bệnh tiểu đường type 1",
+        "description": "Bệnh tự miễn dịch ảnh hưởng đến insulin."
+    },
+    {
+        "disease_id": "DIS066",
+        "name": "Bệnh tiểu đường type 2",
+        "description": "Bệnh liên quan đến insulin và kháng insulin."
+    },
+    {"disease_id": "DIS067", "name": "Bệnh động kinh", "description": "Rối loạn thần kinh gây ra cơn co giật."},
+    {"disease_id": "DIS068", "name": "Bệnh Alzheimer", "description": "Bệnh thoái hóa thần kinh dẫn đến mất trí nhớ."},
+    {"disease_id": "DIS069", "name": "Bệnh Parkinson", "description": "Rối loạn thần kinh ảnh hưởng đến chuyển động."},
+    {
+        "disease_id": "DIS070",
+        "name": "Bệnh trầm cảm",
+        "description": "Rối loạn tâm thần có triệu chứng buồn bã, mệt mỏi."
+    },
+    {"disease_id": "DIS071", "name": "Rối loạn lo âu", "description": "Bệnh tâm thần gây ra lo âu và căng thẳng."},
+    {
+        "disease_id": "DIS072",
+        "name": "Bệnh tự kỷ",
+        "description": "Rối loạn phát triển ảnh hưởng đến giao tiếp và hành vi."
+    },
+    {"disease_id": "DIS073", "name": "Bệnh béo phì", "description": "Tình trạng thừa cân ảnh hưởng đến sức khỏe."},
+    {"disease_id": "DIS074", "name": "Bệnh suyễn", "description": "Rối loạn hô hấp mãn tính gây khó thở."},
+    {
+        "disease_id": "DIS075",
+        "name": "Bệnh viêm phổi tắc nghẽn mạn tính",
+        "description": "Bệnh phổi mãn tính gây khó thở."
+    },
+    {"disease_id": "DIS076", "name": "Bệnh lao", "description": "Nhiễm trùng do vi khuẩn lao gây ra."},
+    {"disease_id": "DIS077", "name": "Bệnh viêm tụy", "description": "Viêm tụy gây ra đau bụng và khó tiêu."},
+    {"disease_id": "DIS078", "name": "Bệnh celiac", "description": "Bệnh tự miễn dịch liên quan đến gluten."},
+    {"disease_id": "DIS079", "name": "Bệnh viêm ruột", "description": "Viêm các cơ quan trong hệ tiêu hóa."},
+    {"disease_id": "DIS080", "name": "Bệnh sỏi thận", "description": "Sự hình thành sỏi trong thận."},
+    {"disease_id": "DIS081", "name": "Bệnh sỏi mật", "description": "Sự hình thành sỏi trong túi mật."},
+    {
+        "disease_id": "DIS082",
+        "name": "Bệnh nhiễm trùng đường tiểu",
+        "description": "Nhiễm trùng ảnh hưởng đến đường tiểu."
+    },
+    {"disease_id": "DIS083", "name": "Bệnh viêm xoang", "description": "Viêm các xoang trong đầu."},
+    {"disease_id": "DIS084", "name": "Bệnh hen suyễn", "description": "Bệnh hô hấp mãn tính gây khó thở."},
+    {"disease_id": "DIS085", "name": "Bệnh dị ứng", "description": "Phản ứng quá mức của hệ miễn dịch."},
+    {"disease_id": "DIS086", "name": "Bệnh thủy đậu", "description": "Bệnh truyền nhiễm do virus thủy đậu gây ra."},
+    {"disease_id": "DIS087", "name": "Bệnh sởi", "description": "Bệnh truyền nhiễm do virus sởi gây ra."},
+    {"disease_id": "DIS088", "name": "Bệnh quai bị", "description": "Bệnh truyền nhiễm do virus quai bị gây ra."},
+    {"disease_id": "DIS089", "name": "Bệnh viêm gan A", "description": "Nhiễm virus viêm gan A."},
+    {"disease_id": "DIS090", "name": "Bệnh dạ dày", "description": "Các vấn đề về dạ dày gây đau bụng."},
+    {
+        "disease_id": "DIS091",
+        "name": "Bệnh tiểu đường gestational",
+        "description": "Tiểu đường phát sinh trong thời kỳ mang thai."
+    },
+    {"disease_id": "DIS092", "name": "Bệnh hô hấp", "description": "Các bệnh liên quan đến hệ hô hấp."},
+    {"disease_id": "DIS093", "name": "Bệnh đau đầu", "description": "Cảm giác đau hoặc khó chịu ở đầu."},
+    {"disease_id": "DIS094", "name": "Bệnh thần kinh", "description": "Các rối loạn liên quan đến hệ thần kinh."},
+    {"disease_id": "DIS095", "name": "Bệnh hoại tử", "description": "Tình trạng chết tế bào mô."},
+    {"disease_id": "DIS096", "name": "Bệnh loãng xương", "description": "Mật độ xương thấp, dễ gãy xương."},
+    {"disease_id": "DIS097", "name": "Bệnh nhồi máu cơ tim", "description": "Tình trạng tim không nhận đủ máu."},
+    {"disease_id": "DIS098", "name": "Bệnh động mạch vành", "description": "Hẹp động mạch cung cấp máu cho tim."},
+    {
+        "disease_id": "DIS099",
+        "name": "Bệnh phổi tắc nghẽn mãn tính",
+        "description": "Bệnh phổi mãn tính ảnh hưởng đến hô hấp."
+    },
+    {"disease_id": "DIS100", "name": "Bệnh viêm khớp dạng thấp", "description": "Bệnh viêm khớp mãn tính."},
+]);
+
 
 
 

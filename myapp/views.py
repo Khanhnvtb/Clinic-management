@@ -434,17 +434,17 @@ def get_date(input_month):
     current_year = current_date.year
 
     if month == current_month and year == current_year:
-        return current_date, True
+        return current_date, 1
     else:
         first_day_of_month = datetime(year=year, month=month, day=1)
 
         next_month = first_day_of_month.replace(day=28) + timedelta(days=4)
         last_day_of_month = next_month - timedelta(days=next_month.day)
 
-        return last_day_of_month, False
+        return last_day_of_month, 0
 
 
-def get_range_date(day, is_current_month):
+def get_range_date(day):
     first_day_of_current_month = day.replace(day=1)
     start_date = first_day_of_current_month - timedelta(days=1)
     start_date = start_date.replace(day=1)
@@ -453,21 +453,23 @@ def get_range_date(day, is_current_month):
 
     if start_date > end_date:
         start_date = end_date
-    return start_date, end_date, is_current_month
+    return start_date, end_date
 
 
-def get_all_income(request, input_month=None):
+def get_all_income(request):
     if request.session['user']['role'] == 3:
         if request.method == "POST":
+            input_month = request.POST.get('input_month')
             try:
                 # Chọn thời gian được nhận thưởng
-                start_date, end_date, is_current_month = get_range_date(get_date(input_month))
+                day, is_current_month = get_date(input_month)
+                start_date, end_date = get_range_date(day)
                 db_handle, client = get_db_handle()
-                incomes = db_handle['Incomes'].find({"month": input_month}, {'flag': True})
+                incomes = list(db_handle['Incomes'].find({"month": input_month}, {'flag': True}))
                 if incomes:
                     client.close()
                 else:
-                    user_names = db_handle.find({"role": {"$ne": 3}}, {"_id": 0, "user_name": 1})
+                    user_names = db_handle['Users'].find({"role": {"$ne": 3}}, {"_id": 0, "user_name": 1})
                     user_names = [user_name['user_name'] for user_name in user_names]
                     doctors = db_handle['Doctors'].find({"user_name": {"$in": user_names}},
                                                         {"_id": 0, "doctor_id": 1, "salary": 1, "bonus": 1})
@@ -490,11 +492,11 @@ def get_all_income(request, input_month=None):
                             "flag": True
                         }
                         bonus = doctor['bonus']
-                        histories = db_handle['Histories'].find({"doctor_id": doctor["doctor_id"]})
+                        histories = db_handle['MedicalHistory'].find({"doctor_id": doctor["doctor_id"]})
                         for history in histories:
                             # Nếu lần khám cuối cùng nằm trong khoảng thời gian được nhận thưởng
                             if history['visit_ids'][-1] in visit_ids:
-                                disease = db_handle['Disases'].find_one({"disease_id": history["disease_id"]},)['name']
+                                disease = db_handle['Diseases'].find_one({"disease_id": history["disease_id"]},)['name']
                                 patient = db_handle['Patients'].find_one({"patient_id": history["patient_id"]},)['name']
                                 income['bonus'].append({
                                     'description': f'Chữa khỏi bệnh {disease} cho bệnh nhân {patient}',
@@ -514,32 +516,31 @@ def get_all_income(request, input_month=None):
                             "flag": True
                         }
                         bonus = nurse['bonus']
-                        histories = db_handle['Histories'].find({"nurse_ids": {'$in': nurse["nurse_id"]}})
+                        histories = db_handle['MedicalHistory'].find({"nurse_ids": {"$in": [nurse['nurse_id']]}})
                         for history in histories:
                             # Nếu lần khám cuối cùng nằm trong khoảng thời gian được nhận thưởng
                             if history['visit_ids'][-1] in visit_ids:
-                                disease = db_handle['Disases'].find_one({"disease_id": history["disease_id"]}, )['name']
+                                disease = db_handle['Diseases'].find_one({"disease_id": history["disease_id"]}, )['name']
                                 patient = db_handle['Patients'].find_one({"patient_id": history["patient_id"]}, )['name']
                                 income['bonus'].append({
-                                    'description': f'Chữa khỏi bệnh {disease} cho bệnh nhân {patient}',
+                                    'description': f'Tham gia chữa khỏi bệnh {disease} cho bệnh nhân {patient}',
                                     'money': bonus,
                                 })
                                 income['total'] += bonus
                         incomes.append(income)
-                    if not is_current_month:
-                        db_handle['Histories'].insert_many(incomes)
+                    if is_current_month == 0:
+                        db_handle['Incomes'].insert_many(incomes)
                 client.close()
-                result = incomes
             except Exception as e:
                 storage = messages.get_messages(request)
                 storage.used = True
                 messages.add_message(request, messages.SUCCESS, "Vui lòng nhập đúng định dạng mmYYYY.")
                 return redirect('get_all_income')
         else:
-            result = MonthForm()
+            incomes = []
     else:
         return redirect('home')
-    return render(request, 'get_all_income.html', {'result': result})
+    return render(request, 'get_all_income.html', {'incomes': incomes})
 
 # def get_income(request, user_id):
 #     db_handle, client = get_db_handle()

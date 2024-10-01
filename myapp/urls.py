@@ -14,4 +14,5 @@ urlpatterns = [
     path('add_visit', views.add_visit, name='add_visit'),
     path('add_service/<int:visit_id>', views.add_service, name='add_service'),
     path('add_medicine/<int:visit_id>', views.add_medicine, name='add_medicine'),
+    path('get_all_income', views.get_all_income, name='get_all_income'),
 ]

@@ -264,7 +264,3 @@ class Diagnose(forms.Form):
         cleaned_data['diagnose'] = diagnose
 
         return cleaned_data
-
-
-class MonthForm(forms.Form):
-    month = forms.CharField(max_length=6)

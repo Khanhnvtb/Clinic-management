@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Lịch sử bệnh nhân{% endblock %}
+
+{% block style %}
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .highlight {
+            background-color: #f9f9f9;
+        }
+
+        .header {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+    </style>
+{% endblock style %}
+
+{% block content %}
+<h1>Lịch sử bệnh nhân</h1>
+
+{% for patient in result %}
+    <h2>{{ patient.name }}</h2>
+    <ul>
+        <li><strong>Căn cước công dân:</strong> {{ patient.CID }}</li>
+        <li><strong>Ngày sinh:</strong> {{ patient.date_of_birth }}</li>
+        <li><strong>Địa chỉ:</strong> {{ patient.address }}</li>
+        <li><strong>Số điện thoại:</strong> {{ patient.phone_number }}</li>
+    </ul>
+
+    <h3>Lịch sử khám bệnh</h3>
+    <table>
+        <thead>
+            <tr class="header">
+                <th>Tên bệnh</th>
+                <th>Số lần khám</th>
+                <th>Đã khỏi bệnh</th>
+                <th>Ngày khám gần nhất</th>
+                <th>Chi tiết khám</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for history in patient.histories %}
+                <tr>
+                    <td>{{ history.disease }}</td>
+                    <td>{{ history.count }}</td>
+                    <td>{{ history.flag|yesno:"Có,Không" }}</td>
+                    <td>{{ history.last_visit }}</td>
+                    <td>
+                        <ul>
+                            {% for visit in history.visits %}
+                                <li>
+                                    <strong>Ngày khám:</strong> {{ visit.visit_date }}<br>
+                                    <strong>Chẩn đoán:</strong> {{ visit.diagnose }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endfor %}
+
+{% endblock content %}

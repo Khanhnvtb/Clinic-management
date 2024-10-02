@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Các bệnh trong tháng{% endblock %}
+
+{% block style %}
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table, th, td {
+        border: 1px solid black;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: left;
+    }
+
+
+</style>
+{% endblock style %}
+
+{% block content %}
+<form method="post" action="{% url 'get_mode_diseases' %}">
+    {% csrf_token %}
+    <p></p>
+    <input type="text" name="input_month" placeholder="Nhập tháng" required>
+    <button type="submit">Xem kết quả</button>
+</form>
+
+{% if result %}
+<h1>Các bệnh trong tháng</h1>
+
+<table style="width: 100%; border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th style="border: 1px solid black; padding: 10px; text-align: left;">Tên bệnh</th>
+            <th style="border: 1px solid black; padding: 10px; text-align: left;">Số người mắc phải</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in result %}
+        <tr>
+            <td style="border: 1px solid black; padding: 10px;">{{ record.0 }}</td>
+            <td style="border: 1px solid black; padding: 10px;">{{ record.1 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endif %}
+{% endblock content %}

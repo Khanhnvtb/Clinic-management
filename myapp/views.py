@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 
-from Tools.scripts.findlinksto import visit
 from django.contrib import messages
 from functools import wraps
 from django.shortcuts import render, redirect
@@ -20,14 +19,14 @@ def login(request):
 
             if user:
                 if user['role'] == 1:
-                    user = db_handle['Doctors'].find_one({"user_name": user_name},
-                                                         {'_id': 0, 'doctor_id': 1, 'name': 1})
-                    user_id = user['doctor_id']
-                    name = user['name']
+                    doctor = db_handle['Doctors'].find_one({"user_name": user_name},
+                                                           {'_id': 0, 'doctor_id': 1, 'name': 1})
+                    user_id = doctor['doctor_id']
+                    name = doctor['name']
                 elif user['role'] == 2:
-                    user = db_handle['Nurses'].find_one({"user_name": user_name}, {'_id': 0, 'nurse_id': 1, 'name': 1})
-                    user_id = user['nurse_id']
-                    name = user['name']
+                    nurse = db_handle['Nurses'].find_one({"user_name": user_name}, {'_id': 0, 'nurse_id': 1, 'name': 1})
+                    user_id = nurse['nurse_id']
+                    name = nurse['name']
                 else:
                     user_id = 'admin'
                     name = 'Nguyễn Văn Khánh'
@@ -628,7 +627,7 @@ def get_revenue(request):
     if request.session['user']['role'] == 3:
         revenue = 0
         if request.method == 'POST':
-            db_handle, clinet = get_db_handle()
+            db_handle, client = get_db_handle()
             input_month = request.POST.get('input_month')
             try:
                 month = int(input_month[:2])
@@ -651,6 +650,7 @@ def get_revenue(request):
                     'bills': bills,
                     'revenue': revenue
                 }
+                client.close()
             except Exception as e:
                 storage = messages.get_messages(request)
                 storage.used = True
@@ -666,5 +666,96 @@ def diagnose(request, visit_id):
     pass
 
 
-# @login_required
-# def get_history(request):
+@login_required
+def get_mode_diseases(request):
+    result = {}
+    if request.method == 'POST':
+        db_handle, client = get_db_handle()
+        input_month = request.POST.get('input_month')
+        try:
+            month = int(input_month[:2])
+            year = int(input_month[2:])
+            first_day_of_month = datetime(year=year, month=month, day=1)
+
+            next_month = first_day_of_month.replace(day=28) + timedelta(days=4)
+            last_day_of_month = next_month - timedelta(days=next_month.day)
+            visits = db_handle['Visits'].find(
+                {"visit_date": {"$gte": first_day_of_month, "$lte": last_day_of_month}},
+                {"_id": 0, "visit_id": 1})
+            visit_ids = [visit["visit_id"] for visit in visits]
+            disease_ids = []
+            diseases = db_handle['Diseases'].find({}, {"_id": 0, 'disease_id': 1, 'name': 1})
+            diseases = {disease['disease_id']: disease['name'] for disease in diseases}
+            for visit_id in visit_ids:
+                histories = db_handle['MedicalHistory'].find({'visit_ids': visit_id}, {'_id': 0, 'disease_id': 1})
+                for history in histories:
+                    disease_ids.append(history['disease_id'])
+            for disease_id in disease_ids:
+                name = diseases[disease_id]
+                if result.get(name):
+                    result[name] += 1
+                else:
+                    result[name] = 1
+            result = sorted(result.items(), key=lambda item: -item[1])
+        except Exception as e:
+            storage = messages.get_messages(request)
+            storage.used = True
+            messages.add_message(request, messages.SUCCESS, "Vui lòng nhập đúng định dạng mmYYYY.")
+            return redirect('get_mode_diseases')
+    return render(request, 'get_mode_diseases.html', {'result': result})
+
+
+def get_history_by_id(patient_id):
+    db_handle, client = get_db_handle()
+    patient = db_handle['Patients'].find_one(
+        {'patient_id': patient_id},
+        {'_id': 0, 'name': 1, 'CID': 1, 'date_of_birth': 1, 'address': 1, 'phone_number': 1}
+    )
+    result = {
+        'name': patient['name'],
+        'CID': patient['CID'],
+        'date_of_birth': patient['date_of_birth'],
+        'address': patient['address'],
+        'phone_number': patient['phone_number'],
+        'histories': []
+    }
+    histories = db_handle['MedicalHistory'].find(
+        {'patient_id': patient_id},
+        {'_id': 0, 'disease_id': 1, 'visit_ids': 1}
+    )
+    for history in histories:
+        visits = list(db_handle['Visits'].find(
+            {'visit_id': {'$in': history['visit_ids']}},
+            {'_id': 0, 'visit_date': 1, 'diagnose': 1, 'visit_id': 1}
+        ).sort('visit_date', -1))
+        record = {
+            'disease': db_handle['Diseases'].find_one({'disease_id': history['disease_id']})['name'],
+            'count': len(visits),
+            'visits': visits,
+            'last_visit': visits[0]['visit_date'] if visits else None
+        }
+        if record['last_visit'] and (datetime.now() - record['last_visit']).days >= 30:
+            record['flag'] = True
+        else:
+            record['flag'] = False
+        result['histories'].append(record)
+        result['histories'] = sorted(result['histories'], key=lambda item: item['last_visit'], reverse=True)
+    return result
+
+
+@login_required
+def get_history(request, CID='all'):
+    result = []
+    db_handle, client = get_db_handle()
+    if CID != 'all':
+        patient_id = db_handle['Patients'].find_one({'CID': CID})['patient_id']
+        result.append(get_history_by_id(patient_id))
+    else:
+        patients = db_handle['Patients'].find({}, {'_id': 0, 'patient_id': 1})
+        patient_ids = [patient['patient_id'] for patient in patients]
+        for patient_id in patient_ids:
+            record = get_history_by_id(patient_id) or None
+            if record:
+                result.append(record)
+    client.close()
+    return render(request, 'get_history.html', {'result': result})

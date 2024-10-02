@@ -57,6 +57,7 @@ def gen_data():
         patient_id = "P" + f"{random.randint(1, 100):03}"
         doctor_id = "D" + f"{random.randint(1, 15):03}"
         disease_id = "DIS" + f"{random.randint(1, 100):03}"
+        diagnose = db_handle['Diseases'].find_one({'disease_id': disease_id},{'_id': 0, 'name': 1})['name']
         vs_date = []
         start_date = generate_random_date(date(2024, 1, 1), date(2024, 9, 29))
         for j in range(0, random.randint(1, 5)):
@@ -73,7 +74,7 @@ def gen_data():
                 "patient_id": patient_id,
                 "nurse_id": nurse_id,
                 "description": [],
-                "diagnose": "",
+                "diagnose": diagnose,
                 "visit_date": datetime.combine(visit_date, datetime.min.time()),
                 "bill_ids": []
             }

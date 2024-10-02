@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Hệ thống quản lý bệnh viện{% endblock %}</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -84,12 +85,15 @@
             margin-top: 10px;
         }
     </style>
+
+    {% block style %}
+    {% endblock style %}
+
 </head>
 <body>
 
 <header>
     <h1>Hệ thống quản lý bệnh viện</h1>
-    <!-- Nút quay về trang chủ -->
     <a href="{% url 'home' %}" class="home-button">Trang chủ</a>
     {% if request.session.user %}
         <p>Chào mừng {{ request.session.user.name }}</p>
@@ -97,10 +101,8 @@
     {% else %}
         <a href="{% url 'login' %}" class="home-button">Đăng nhập</a>
     {% endif %}
-
 </header>
 
-<!-- Khối nội dung sẽ được thay thế bởi các template con -->
 {% block content %}
 {% endblock %}
 

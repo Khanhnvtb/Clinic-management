@@ -19,4 +19,6 @@ urlpatterns = [
     path('get_revenue', views.get_revenue, name='get_revenue'),
     path('examination', views.examination, name='examination'),
     path('diagnose/<int:visit_id>', views.diagnose, name='diagnose'),
+    path('get_mode_diseases', views.get_mode_diseases, name='get_mode_diseases'),
+    path('get_history/<str:CID>', views.get_history, name='get_history'),
 ]

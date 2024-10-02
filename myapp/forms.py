@@ -1,3 +1,5 @@
+from cProfile import label
+
 from django import forms
 from .models import *
 from pymongo import MongoClient
@@ -251,17 +253,7 @@ class DescriptionForm(forms.Form):
     quantity = forms.IntegerField(label="Số lượng")  # Thêm label cho trường quantity
 
 
-class Diagnose(forms.Form):
-    content = forms.CharField()
-    description = forms.CharField()
+class ExaminationForm(forms.Form):
+    content = forms.CharField(label='Nội dung khám')
+    description = forms.CharField(label='Kết quả')
 
-    def clean(self):
-        cleaned_data = super().clean()
-
-        diagnose = Diagnose(
-            content=cleaned_data.get('content'),
-            description=cleaned_data.get('description'),
-        )
-        cleaned_data['diagnose'] = diagnose
-
-        return cleaned_data

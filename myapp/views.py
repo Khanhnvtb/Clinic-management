@@ -159,7 +159,7 @@ def add_nurse(request):
 
 @login_required
 def add_patient(request):
-    if request.session['user']['role'] == 3:
+    if request.session['user']['role'] == 2:
         if request.method == "POST":
             form = PatientForm(request.POST)
             if form.is_valid():
@@ -318,7 +318,7 @@ def add_visit(request):
                 storage.used = True
                 messages.add_message(request, messages.SUCCESS, 'Đăng ký khám thành công')
                 client.close()
-                return redirect('add_service', visit_id=no)
+                return redirect('add_services', visit_id=no)
             else:
                 storage = messages.get_messages(request)
                 storage.used = True
@@ -338,7 +338,7 @@ def examination(request):
         if request.method == "POST":
             visit_id = request.POST.get('visit_id')
             if request.session['user']['role'] == 1:
-                return redirect('diagnose', visit_id=visit_id)
+                return redirect('add_diagnose', visit_id=visit_id)
             else:
                 return redirect('add_services', visit_id=visit_id)
         else:
@@ -662,8 +662,36 @@ def get_revenue(request):
 
 
 @login_required
-def diagnose(request, visit_id):
-    pass
+def add_diagnose(request, visit_id, formset=None, flag=0):
+    if request.session['user']['role'] == 1:
+        db_handle, client = get_db_handle()
+        if request.method == "POST":
+            diagnose = request.POST.get('diagnose')
+            if formset.is_valid() and diagnose:
+                for form in formset:
+                    if form.is_valid():
+                        content = form.cleaned_data.get('content')
+                        description = form.cleaned_data.get('description')
+
+                        # Thêm mô tả mới vào phần tử mảng description có content tương ứng
+                        db_handle['Visits'].update_one(
+                            {'visit_id': visit_id, 'description.content': content},
+                            {'$push': {'description.$.description': description},
+                             '$push': {'description.$.time': datetime.now()}}
+                        )
+                    db_handle['Visits'].update_one({'visit_id': visit_id}, {'$set': {'diagnose': diagnose}})
+                return redirect('add_diagnose', visit_id, flag=1)
+        else:
+            # Lấy danh sách description hiện tại của visit_id
+            description = db_handle['Visits'].find_one({"visit_id": visit_id}, {'_id': 0, 'description': 1})['description']
+
+            # Tạo formset với số lượng form bằng với số phần tử trong description
+            DescriptionFormSet = formset_factory(DiseaseForm, extra=0)  # extra=0 nếu không muốn thêm form trống
+            formset = DescriptionFormSet(initial=description)  # Khởi tạo với dữ liệu description
+
+        return render(request, 'add_diagnose.html', {'formset': formset, 'flag': flag})
+    else:
+        return redirect('home')
 
 
 @login_required

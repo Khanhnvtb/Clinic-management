@@ -18,7 +18,7 @@ urlpatterns = [
     path('get_all_income', views.get_all_income, name='get_all_income'),
     path('get_revenue', views.get_revenue, name='get_revenue'),
     path('examination', views.examination, name='examination'),
-    path('diagnose/<int:visit_id>', views.diagnose, name='diagnose'),
+    path('add_diagnose/<int:visit_id>', views.add_diagnose, name='add_diagnose'),
     path('get_mode_diseases', views.get_mode_diseases, name='get_mode_diseases'),
     path('get_history/<str:CID>', views.get_history, name='get_history'),
 ]

@@ -15,6 +15,7 @@ class UserForm(forms.ModelForm):
         fields = "__all__"
         widgets = {
             'role': forms.HiddenInput(),
+            'password': forms.PasswordInput(attrs={'class': 'form-control'}),
         }
 
 

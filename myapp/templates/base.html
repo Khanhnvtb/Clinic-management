@@ -91,6 +91,13 @@
     <h1>Hệ thống quản lý bệnh viện</h1>
     <!-- Nút quay về trang chủ -->
     <a href="{% url 'home' %}" class="home-button">Trang chủ</a>
+    {% if request.session.user %}
+        <p>Chào mừng {{ request.session.user.name }}</p>
+        <a href="{% url 'logout' %}" class="home-button">Đăng xuất</a>
+    {% else %}
+        <a href="{% url 'login' %}" class="home-button">Đăng nhập</a>
+    {% endif %}
+
 </header>
 
 <!-- Khối nội dung sẽ được thay thế bởi các template con -->

@@ -2,12 +2,84 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login Page</title>
+    {% load form_tags %}
+
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Tùy chỉnh CSS */
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-form {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            width: 100%;
+        }
+
+        .text-danger {
+            font-size: 0.9rem; /* Chỉnh kích thước chữ cho thông báo lỗi */
+        }
+
+        .form-control {
+            margin-top: 5px; /* Thêm khoảng cách trên ô nhập */
+        }
+    </style>
 </head>
 <body>
-<form action="login" method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <div class='d-flex justify-content-center mt-4'><input class='btn btn-primary' type="submit" value="Đăng nhập"></div>
-</form>
+<div class="login-form">
+    <h2>Đăng Nhập</h2>
+    <form action="login" method="post">
+        {% csrf_token %}
+
+        <!-- Tên đăng nhập -->
+        <div class="form-group">
+            <label for="user_name">Tên đăng nhập</label>
+            {{ form.user_name|add_class:"form-control" }}
+            {% if form.user_name.errors %}
+                <div class="text-danger">{{ form.user_name.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Mật khẩu -->
+        <div class="form-group">
+            <label for="password">Mật khẩu</label>
+            {{ form.password|add_class:"form-control" }}
+            {% if form.password.errors %}
+                <div class="text-danger">{{ form.password.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Nút Đăng Nhập -->
+        <div class='d-flex justify-content-center mt-4'>
+            <input class='btn btn-primary' type="submit" value="Đăng nhập">
+        </div>
+    </form>
+</div>
+
+<!-- Bootstrap JS and dependencies (optional) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

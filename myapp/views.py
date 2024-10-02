@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from Tools.scripts.findlinksto import visit
 from django.contrib import messages
+from functools import wraps
 from django.shortcuts import render, redirect
 from .forms import *
 from django.forms import formset_factory
@@ -19,14 +20,21 @@ def login(request):
 
             if user:
                 if user['role'] == 1:
-                    user_id = db_handle['Doctors'].find_one({"user_name": user_name})['doctor_id']
+                    user = db_handle['Doctors'].find_one({"user_name": user_name},
+                                                         {'_id': 0, 'doctor_id': 1, 'name': 1})
+                    user_id = user['doctor_id']
+                    name = user['name']
                 elif user['role'] == 2:
-                    user_id = db_handle['Nurses'].find_one({"user_name": user_name})['nurse_id']
+                    user = db_handle['Nurses'].find_one({"user_name": user_name}, {'_id': 0, 'nurse_id': 1, 'name': 1})
+                    user_id = user['nurse_id']
+                    name = user['name']
                 else:
                     user_id = 'admin'
+                    name = 'Nguyễn Văn Khánh'
                 # Lưu thông tin user vào session
                 request.session['user'] = {
                     'user_id': user_id,
+                    'name': name,
                     'role': user['role'],
                 }
                 return redirect('home')
@@ -40,12 +48,25 @@ def login(request):
     return render(request, 'login.html', {'form': form})
 
 
+def login_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        user = request.session.get('user')
+        if not user:
+            return redirect('login')
+        return view_func(request, *args, **kwargs)
+
+    return _wrapped_view
+
+
+@login_required
 def logout(request):
     if 'user' in request.session:
-        del request.session  # Xóa thông tin người dùng trong session
+        del request.session['user']  # Xóa thông tin người dùng trong session
     return redirect('login')
 
 
+@login_required
 def add_doctor(request):
     if request.session['user']['role'] == 3:
         if request.method == "POST":
@@ -91,6 +112,7 @@ def add_doctor(request):
     return render(request, 'add.html', {'form': form, 'flag': 1})
 
 
+@login_required
 def add_nurse(request):
     if request.session['user']['role'] == 3:
         if request.method == "POST":
@@ -136,6 +158,7 @@ def add_nurse(request):
     return render(request, 'add.html', {'form': form, 'flag': 2})
 
 
+@login_required
 def add_patient(request):
     if request.session['user']['role'] == 3:
         if request.method == "POST":
@@ -173,6 +196,7 @@ def add_patient(request):
     return render(request, 'add.html', {'form': form, 'flag': 3})
 
 
+@login_required
 def add_medicine(request):
     if request.session['user']['role'] == 3:
         if request.method == "POST":
@@ -203,6 +227,7 @@ def add_medicine(request):
     return render(request, 'add.html', {'form': form, 'flag': 4})
 
 
+@login_required
 def add_service(request):
     if request.session['user']['role'] == 3:
         if request.method == "POST":
@@ -233,6 +258,7 @@ def add_service(request):
     return render(request, 'add.html', {'form': form, 'flag': 5})
 
 
+@login_required
 def add_disease(request):
     if request.session['user']['role'] == 3:
         if request.method == "POST":
@@ -262,10 +288,12 @@ def add_disease(request):
     return render(request, 'add.html', {'form': form, 'flag': 6})
 
 
+@login_required
 def get_home(request):
     return render(request, 'home.html')
 
 
+@login_required
 def add_visit(request):
     if request.session['user']['role'] == 2:
         if request.method == "POST":
@@ -303,6 +331,7 @@ def add_visit(request):
     return render(request, 'add_visit.html', {'form': form})
 
 
+@login_required
 def examination(request):
     if request.session['user']['role'] == 3:
         return redirect('home')
@@ -317,6 +346,7 @@ def examination(request):
             return render(request, 'examination.html')
 
 
+@login_required
 def add_services(request, visit_id):
     if request.session['user']['role'] == 2:
         # Tạo formset với 1 form trống
@@ -379,6 +409,7 @@ def add_services(request, visit_id):
         return redirect('home')
 
 
+@login_required
 def patient_care(request):
     if request.session['user']['role'] == 2:
         if request.method == "POST":
@@ -390,6 +421,7 @@ def patient_care(request):
         return redirect('home')
 
 
+@login_required
 def add_medicines(request, visit_id):
     if request.session['user']['role'] == 2:
         # Tạo formset với 1 form trống
@@ -483,6 +515,7 @@ def get_range_date(day):
     return start_date, end_date
 
 
+@login_required
 def get_all_income(request):
     if request.method == "POST":
         input_month = request.POST.get('input_month')
@@ -590,6 +623,7 @@ def get_all_income(request):
     return render(request, 'get_all_income.html', {'incomes': incomes})
 
 
+@login_required
 def get_revenue(request):
     if request.session['user']['role'] == 3:
         revenue = 0
@@ -604,11 +638,13 @@ def get_revenue(request):
                 next_month = first_day_of_month.replace(day=28) + timedelta(days=4)
                 last_day_of_month = next_month - timedelta(days=next_month.day)
                 bill_ids = []
-                visits = db_handle['Visits'].find({"visit_date": {"$gte": first_day_of_month, "$lte": last_day_of_month}},
-                                                  {"_id": 0, "bill_ids": 1})
+                visits = db_handle['Visits'].find(
+                    {"visit_date": {"$gte": first_day_of_month, "$lte": last_day_of_month}},
+                    {"_id": 0, "bill_ids": 1})
                 for visit in visits:
                     bill_ids += visit['bill_ids']
-                bills = list(db_handle['Bills'].find({"bill_id": {"$in": bill_ids}},{"_id": 0, "bill_id": 1, "total": 1}))
+                bills = list(
+                    db_handle['Bills'].find({"bill_id": {"$in": bill_ids}}, {"_id": 0, "bill_id": 1, "total": 1}))
                 for bill in bills:
                     revenue += bill['total']
                 result = {
@@ -625,7 +661,10 @@ def get_revenue(request):
     return render(request, 'get_revenue.html', {'result': result})
 
 
+@login_required
 def diagnose(request, visit_id):
     pass
 
+
+# @login_required
 # def get_history(request):

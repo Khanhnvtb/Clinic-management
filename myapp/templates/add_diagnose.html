@@ -90,22 +90,21 @@
     <h1>Danh mục khám</h1>
 
     <form method="post">
+        <input type="hidden" name="extra" value="{{ extra }}">
         {% csrf_token %}
-
         <!-- Formset for description fields -->
-        <h3>Descriptions:</h3>
         <div id="formset">
             {% for form in formset %}
             <div class="description-form">
                 <div>
                     <!-- Content is displayed but not editable -->
-                    <label for="id_form-{{ forloop.counter0 }}-content">Content:</label>
+                    <label for="id_form-{{ forloop.counter0 }}-content">Nội dung:</label>
                     <input type="text" id="id_form-{{ forloop.counter0 }}-content"
                            value="{{ form.initial.content }}" readonly>
                 </div>
                 <div>
                     <!-- Editable description -->
-                    <label for="id_form-{{ forloop.counter0 }}-description">Description:</label>
+                    <label for="id_form-{{ forloop.counter0 }}-description">Kết quả:</label>
                     {% if flag == 0 %}
                     <textarea id="id_form-{{ forloop.counter0 }}-description"
                               name="form-{{ forloop.counter0 }}-description"
@@ -123,9 +122,9 @@
             <div class="description-form">
                 <label for="diagnose">Chẩn đoán:</label>
                 {% if flag == 0 %}
-                <textarea id="diagnose" name="diagnose" rows="3" required>{{ visit.diagnose }}</textarea>
+                <textarea id="diagnose" name="diagnose" rows="3" required>{{ diagnose }}</textarea>
                 {% else %}
-                <textarea id="diagnose" name="diagnose" rows="3" readonly>{{ visit.diagnose }}</textarea>
+                <textarea id="diagnose" name="diagnose" rows="3" readonly>{{ diagnose }}</textarea>
                 {% endif %}
             </div>
         </div>

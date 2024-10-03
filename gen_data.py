@@ -73,7 +73,7 @@ def gen_data():
                 "visit_id": visit_id,
                 "patient_id": patient_id,
                 "nurse_id": nurse_id,
-                "description": [],
+                "descriptions": [],
                 "diagnose": diagnose,
                 "visit_date": datetime.combine(visit_date, datetime.min.time()),
                 "bill_ids": []
@@ -89,7 +89,7 @@ def gen_data():
             for k in range(0, random.randint(3, 5)):
                 time = generate_random_time_in_day(visit_date)
                 service = db_handle['Services'].find({"service_id": random.randint(1, 200)})[0]
-                visit["description"].append({
+                visit["descriptions"].append({
                     "content": service['name'],
                     "description": service['description'],
                     "time": time,
@@ -114,7 +114,7 @@ def gen_data():
                 time = generate_random_time_in_day(visit_date)
                 medicines = db_handle['Medicines'].find({"medicine_id": "MED" + f"{random.randint(1, 300):03}"})
                 for medicine in medicines:
-                    visit["description"].append({
+                    visit["descriptions"].append({
                         "content": medicine["name"],
                         "description": medicine["description"],
                         "time": time,

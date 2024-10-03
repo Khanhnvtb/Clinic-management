@@ -312,7 +312,9 @@ def add_visit(request):
                         "visit_id": no,
                         "nurse_id": request.session['user']['user_id'],
                         "patient_id": patient['patient_id'],
-                        "visit_date": datetime.now()
+                        "descriptions": [],
+                        "visit_date": datetime.now(),
+                        "flag": 0
                     })
                 storage = messages.get_messages(request)
                 storage.used = True
@@ -368,7 +370,9 @@ def add_services(request, visit_id):
                         service = db_handle['Services'].find_one({"service_id": int(service_id)})
                         # Thêm mô tả dịch vụ
                         descriptions.append({
-                            'content': service['name']
+                            'content': service['name'],
+                            'description': '',
+                            'time': datetime.now(),
                         })
 
                         services.append({
@@ -391,6 +395,7 @@ def add_services(request, visit_id):
                 bill = {
                     'bill_id': no,
                     'services': services,
+                    'date': datetime.now(),
                     'total': total
                 }
 
@@ -443,7 +448,9 @@ def add_medicines(request, visit_id):
                         medicine = db_handle['Medicines'].find_one({"medicine_id": medicine_id})
                         # Thêm mô tả dịch vụ
                         descriptions.append({
-                            'content': medicine['name']
+                            'content': medicine['name'],
+                            'description': '',
+                            'time': datetime.now(),
                         })
 
                         medicines.append({
@@ -466,6 +473,7 @@ def add_medicines(request, visit_id):
                 bill = {
                     'bill_id': no,
                     'medicines': medicines,
+                    'date': datetime.now(),
                     'total': total
                 }
 
@@ -567,8 +575,7 @@ def get_all_income(request):
                         "user_id": doctor['doctor_id'],
                         "month": input_month,
                         "salary": doctor['salary'],
-                        "bonus": [
-                        ],
+                        "bonus": [],
                         "total": doctor['salary'],
                         "flag": True
                     }
@@ -662,34 +669,48 @@ def get_revenue(request):
 
 
 @login_required
-def add_diagnose(request, visit_id, formset=None, flag=0):
+def add_diagnose(request, visit_id):
     if request.session['user']['role'] == 1:
         db_handle, client = get_db_handle()
+        # Lấy danh sách description hiện tại của visit_id
+        visit = db_handle['Visits'].find_one(
+            {"visit_id": visit_id}, {'_id': 0, 'descriptions': 1, 'flag': 1, 'diagnose': 1}
+        )
+        descriptions = visit['descriptions']
         if request.method == "POST":
-            diagnose = request.POST.get('diagnose')
-            if formset.is_valid() and diagnose:
-                for form in formset:
-                    if form.is_valid():
-                        content = form.cleaned_data.get('content')
-                        description = form.cleaned_data.get('description')
+            diagnose = request.POST.get('diagnose') or ""
+            extra = int(request.POST.get('extra')) or 0
 
-                        # Thêm mô tả mới vào phần tử mảng description có content tương ứng
-                        db_handle['Visits'].update_one(
-                            {'visit_id': visit_id, 'description.content': content},
-                            {'$push': {'description.$.description': description},
-                             '$push': {'description.$.time': datetime.now()}}
-                        )
-                    db_handle['Visits'].update_one({'visit_id': visit_id}, {'$set': {'diagnose': diagnose}})
-                return redirect('add_diagnose', visit_id, flag=1)
+            for i in range(extra):
+                content = descriptions[i]['content']
+                description = request.POST.get('form-' + str(i) + '-description')
+                # Cập nhật mô tả mới vào phần tử mảng description có content tương ứng
+                db_handle['Visits'].update_one(
+                    {'visit_id': visit_id, 'descriptions.content': content},
+                    {'$set': {'descriptions.$.description': description}}
+                )
+                db_handle['Visits'].update_one(
+                    {'visit_id': visit_id, 'descriptions.content': content},
+                    {'$set': {'descriptions.$.time': datetime.now()}}
+                )
+
+            # Cập nhật diagnose
+            db_handle['Visits'].update_one({'visit_id': visit_id},
+                                           {'$set': {'diagnose': diagnose}})
+            db_handle['Visits'].update_one({'visit_id': visit_id},
+                                           {'$set': {'flag': 1}})
+
+            return redirect('add_diagnose', visit_id=visit_id)
         else:
-            # Lấy danh sách description hiện tại của visit_id
-            description = db_handle['Visits'].find_one({"visit_id": visit_id}, {'_id': 0, 'description': 1})['description']
-
-            # Tạo formset với số lượng form bằng với số phần tử trong description
-            DescriptionFormSet = formset_factory(DiseaseForm, extra=0)  # extra=0 nếu không muốn thêm form trống
-            formset = DescriptionFormSet(initial=description)  # Khởi tạo với dữ liệu description
-
-        return render(request, 'add_diagnose.html', {'formset': formset, 'flag': flag})
+            # Khởi tạo formset từ dữ liệu hiện tại trong GET request
+            ExaminationFormSet = formset_factory(ExaminationForm, extra=0)
+            formset = ExaminationFormSet(initial=[
+                {'content': desc['content'], 'description': desc['description']}
+                for desc in descriptions
+            ])
+            return render(request, 'add_diagnose.html',
+                          {'formset': formset, 'flag': visit['flag'], 'diagnose': visit['diagnose'],
+                           'extra': len(descriptions)})
     else:
         return redirect('home')
 

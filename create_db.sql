@@ -4620,6 +4620,11 @@ db.Nurses.updateMany(
     { $set: { salary: 5000000, bonus: 200000 } }
 );
 
+db.Visits.updateMany(
+    {},
+    { $set: { flag: 1} }
+);
+
 db.Diseases.insertMany([
     {"disease_id": "DIS051", "name": "Bệnh cúm", "description": "Bệnh do virus cúm gây ra, gây sốt, ho, đau cơ."},
     {

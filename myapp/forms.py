@@ -254,6 +254,6 @@ class DescriptionForm(forms.Form):
 
 
 class ExaminationForm(forms.Form):
-    content = forms.CharField(label='Nội dung khám')
-    description = forms.CharField(label='Kết quả')
+    content = forms.CharField()
+    description = forms.CharField()
 

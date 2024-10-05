@@ -804,7 +804,7 @@ def get_history(request, CID='all'):
         patient_ids = [patient['patient_id'] for patient in patients]
         for patient_id in patient_ids:
             record = get_history_by_id(patient_id) or None
-            if record:
+            if record['histories']:
                 result.append(record)
     client.close()
     return render(request, 'get_history.html', {'result': result})

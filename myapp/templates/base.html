@@ -16,15 +16,26 @@
             background-color: #007bff;
             color: white;
             padding: 15px;
-            text-align: center;
-            position: relative;
+            display: flex; /* Sử dụng flexbox để căn chỉnh */
+            justify-content: space-between; /* Căn giữa hai bên */
+            align-items: center; /* Căn giữa theo chiều dọc */
         }
 
-        header .home-button {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
+        .header-left {
+            display: flex; /* Sử dụng flexbox cho phần bên trái */
+            align-items: center; /* Căn giữa theo chiều dọc */
+        }
+
+        .header-center {
+            flex-grow: 1; /* Cho phần trung tâm chiếm không gian còn lại */
+            text-align: center; /* Căn giữa cho phần tiêu đề và chào mừng */
+        }
+
+        .header-right {
+            text-align: right; /* Căn phải cho phần bên phải */
+        }
+
+        .home-button {
             background-color: white;
             color: #007bff;
             border: none;
@@ -32,9 +43,10 @@
             cursor: pointer;
             border-radius: 5px;
             text-decoration: none;
+            margin-left: 20px; /* Khoảng cách giữa các nút */
         }
 
-        header .home-button:hover {
+        .home-button:hover {
             background-color: #0056b3;
             color: white;
         }
@@ -93,14 +105,22 @@
 <body>
 
 <header>
-    <h1>Hệ thống quản lý bệnh viện</h1>
-    <a href="{% url 'home' %}" class="home-button">Trang chủ</a>
-    {% if request.session.user %}
-        <p>Chào mừng {{ request.session.user.name }}</p>
-        <a href="{% url 'logout' %}" class="home-button">Đăng xuất</a>
-    {% else %}
-        <a href="{% url 'login' %}" class="home-button">Đăng nhập</a>
-    {% endif %}
+    <div class="header-left">
+        <a href="{% url 'home' %}" class="home-button">Trang chủ</a>
+    </div>
+    <div class="header-center">
+        <h1>Hệ thống quản lý bệnh viện</h1>
+        {% if request.session.user %}
+            <p>Chào mừng {{ request.session.user.name }}</p>
+        {% endif %}
+    </div>
+    <div class="header-right">
+        {% if request.session.user %}
+            <a href="{% url 'logout' %}" class="home-button">Đăng xuất</a>
+        {% else %}
+            <a href="{% url 'login' %}" class="home-button">Đăng nhập</a>
+        {% endif %}
+    </div>
 </header>
 
 {% block content %}

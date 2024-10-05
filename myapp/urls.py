@@ -20,5 +20,6 @@ urlpatterns = [
     path('examination', views.examination, name='examination'),
     path('add_diagnose/<int:visit_id>', views.add_diagnose, name='add_diagnose'),
     path('get_mode_diseases', views.get_mode_diseases, name='get_mode_diseases'),
+    path('get_history', views.get_history, name='get_history'),
     path('get_history/<str:CID>', views.get_history, name='get_history'),
 ]

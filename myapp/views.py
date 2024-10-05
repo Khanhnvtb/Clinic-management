@@ -306,7 +306,7 @@ def add_visit(request):
                     storage = messages.get_messages(request)
                     storage.used = True
                     messages.add_message(request, messages.SUCCESS, 'Mời thêm mới bệnh nhân')
-                    redirect('add_patient')
+                    return redirect('add_patient')
                 else:
                     db_handle['Visits'].insert_one({
                         "visit_id": no,

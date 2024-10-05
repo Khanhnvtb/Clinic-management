@@ -655,7 +655,8 @@ def get_revenue(request):
                     revenue += bill['total']
                 result = {
                     'bills': bills,
-                    'revenue': revenue
+                    'revenue': revenue,
+                    'title': f'Doanh thu tháng {month} năm {year}'
                 }
                 client.close()
             except Exception as e:

@@ -1298,304 +1298,305 @@ db.Patients.insertMany([
 
 db.Diseases.insertMany([
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_001",
-        "name": "Disease 1",
-        "description": "This is the description for Disease 1."
+        "disease_id": "DIS001",
+        "name": "Cảm cúm",
+        "description": "Bệnh do virus gây ra, thường có triệu chứng sốt, ho, đau đầu."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_002",
-        "name": "Disease 2",
-        "description": "This is the description for Disease 2."
+        "disease_id": "DIS002",
+        "name": "Viêm phổi",
+        "description": "Bệnh nhiễm trùng phổi, gây khó thở và ho có đờm."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_003",
-        "name": "Disease 3",
-        "description": "This is the description for Disease 3."
+        "disease_id": "DIS003",
+        "name": "Tiểu đường",
+        "description": "Bệnh mãn tính ảnh hưởng đến khả năng sản xuất insulin của cơ thể."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_004",
-        "name": "Disease 4",
-        "description": "This is the description for Disease 4."
+        "disease_id": "DIS004",
+        "name": "Cao huyết áp",
+        "description": "Tình trạng áp lực máu cao hơn mức bình thường."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_005",
-        "name": "Disease 5",
-        "description": "This is the description for Disease 5."
+        "disease_id": "DIS005",
+        "name": "Hen suyễn",
+        "description": "Bệnh về đường hô hấp, gây khó thở và thở khò khè."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_006",
-        "name": "Disease 6",
-        "description": "This is the description for Disease 6."
+        "disease_id": "DIS006",
+        "name": "Đau dạ dày",
+        "description": "Bệnh viêm hoặc loét dạ dày, gây đau bụng."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_007",
-        "name": "Disease 7",
-        "description": "This is the description for Disease 7."
+        "disease_id": "DIS007",
+        "name": "Viêm gan",
+        "description": "Bệnh viêm gan do virus hoặc do rượu."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_008",
-        "name": "Disease 8",
-        "description": "This is the description for Disease 8."
+        "disease_id": "DIS008",
+        "name": "Sỏi thận",
+        "description": "Tình trạng hình thành sỏi trong thận, gây đau và tiểu khó."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_009",
-        "name": "Disease 9",
-        "description": "This is the description for Disease 9."
+        "disease_id": "DIS009",
+        "name": "Bệnh gout",
+        "description": "Bệnh do sự tích tụ axit uric trong cơ thể."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_010",
-        "name": "Disease 10",
-        "description": "This is the description for Disease 10."
+        "disease_id": "DIS010",
+        "name": "Cúm gia cầm",
+        "description": "Bệnh do virus cúm gây ra, thường lây truyền từ động vật sang người."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_011",
-        "name": "Disease 11",
-        "description": "This is the description for Disease 11."
+        "disease_id": "DIS011",
+        "name": "Viêm khớp",
+        "description": "Bệnh viêm gây đau và sưng khớp."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_012",
-        "name": "Disease 12",
-        "description": "This is the description for Disease 12."
+        "disease_id": "DIS012",
+        "name": "Bệnh trĩ",
+        "description": "Sự phình to của tĩnh mạch ở vùng hậu môn."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_013",
-        "name": "Disease 13",
-        "description": "This is the description for Disease 13."
+        "disease_id": "DIS013",
+        "name": "Bệnh tim mạch",
+        "description": "Các vấn đề liên quan đến tim và mạch máu."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_014",
-        "name": "Disease 14",
-        "description": "This is the description for Disease 14."
+        "disease_id": "DIS014",
+        "name": "Ung thư",
+        "description": "Bệnh do sự phát triển bất thường của tế bào."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_015",
-        "name": "Disease 15",
-        "description": "This is the description for Disease 15."
+        "disease_id": "DIS015",
+        "name": "Nhiễm trùng đường tiết niệu",
+        "description": "Bệnh nhiễm trùng ở hệ thống tiết niệu."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_016",
-        "name": "Disease 16",
-        "description": "This is the description for Disease 16."
+        "disease_id": "DIS016",
+        "name": "Bệnh Alzheimer",
+        "description": "Bệnh thoái hóa thần kinh gây suy giảm trí nhớ."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_017",
-        "name": "Disease 17",
-        "description": "This is the description for Disease 17."
+        "disease_id": "DIS017",
+        "name": "Bệnh Parkinson",
+        "description": "Bệnh thoái hóa thần kinh ảnh hưởng đến chuyển động."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_018",
-        "name": "Disease 18",
-        "description": "This is the description for Disease 18."
+        "disease_id": "DIS018",
+        "name": "Bệnh viêm ruột",
+        "description": "Bệnh viêm mãn tính ở ruột."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_019",
-        "name": "Disease 19",
-        "description": "This is the description for Disease 19."
+        "disease_id": "DIS019",
+        "name": "Tăng cholesterol",
+        "description": "Tình trạng mức cholesterol trong máu cao."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_020",
-        "name": "Disease 20",
-        "description": "This is the description for Disease 20."
+        "disease_id": "DIS020",
+        "name": "Bệnh tiểu đường loại 2",
+        "description": "Bệnh tiểu đường phổ biến, thường gặp ở người lớn."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_021",
-        "name": "Disease 21",
-        "description": "This is the description for Disease 21."
+        "disease_id": "DIS021",
+        "name": "Bệnh tật về gan",
+        "description": "Các bệnh ảnh hưởng đến chức năng gan."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_022",
-        "name": "Disease 22",
-        "description": "This is the description for Disease 22."
+        "disease_id": "DIS022",
+        "name": "Đau đầu migren",
+        "description": "Bệnh gây đau đầu dữ dội và có thể kèm theo buồn nôn."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_023",
-        "name": "Disease 23",
-        "description": "This is the description for Disease 23."
+        "disease_id": "DIS023",
+        "name": "Rối loạn lo âu",
+        "description": "Rối loạn tâm lý gây lo âu quá mức."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_024",
-        "name": "Disease 24",
-        "description": "This is the description for Disease 24."
+        "disease_id": "DIS024",
+        "name": "Bệnh celiac",
+        "description": "Bệnh gây ra phản ứng miễn dịch với gluten."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_025",
-        "name": "Disease 25",
-        "description": "This is the description for Disease 25."
+        "disease_id": "DIS025",
+        "name": "Rối loạn tâm trạng",
+        "description": "Rối loạn liên quan đến cảm xúc và tâm trạng."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_026",
-        "name": "Disease 26",
-        "description": "This is the description for Disease 26."
+        "disease_id": "DIS026",
+        "name": "Bệnh sốt rét",
+        "description": "Bệnh do muỗi truyền gây sốt và mệt mỏi."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_027",
-        "name": "Disease 27",
-        "description": "This is the description for Disease 27."
+        "disease_id": "DIS027",
+        "name": "Bệnh viêm màng não",
+        "description": "Viêm màng não do virus hoặc vi khuẩn."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_028",
-        "name": "Disease 28",
-        "description": "This is the description for Disease 28."
+        "disease_id": "DIS028",
+        "name": "Bệnh động kinh",
+        "description": "Bệnh thần kinh gây co giật."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_029",
-        "name": "Disease 29",
-        "description": "This is the description for Disease 29."
+        "disease_id": "DIS029",
+        "name": "Bệnh hen phế quản",
+        "description": "Bệnh viêm đường hô hấp gây khó thở."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_030",
-        "name": "Disease 30",
-        "description": "This is the description for Disease 30."
+        "disease_id": "DIS030",
+        "name": "Viêm da",
+        "description": "Bệnh viêm ảnh hưởng đến da."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_031",
-        "name": "Disease 31",
-        "description": "This is the description for Disease 31."
+        "disease_id": "DIS031",
+        "name": "Bệnh thiếu máu",
+        "description": "Thiếu hụt hồng cầu trong máu."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_032",
-        "name": "Disease 32",
-        "description": "This is the description for Disease 32."
+        "disease_id": "DIS032",
+        "name": "Nhiễm khuẩn",
+        "description": "Bệnh do vi khuẩn gây ra."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_033",
-        "name": "Disease 33",
-        "description": "This is the description for Disease 33."
+        "disease_id": "DIS033",
+        "name": "Bệnh sốt xuất huyết",
+        "description": "Bệnh do virus gây ra, thường lây truyền qua muỗi."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_034",
-        "name": "Disease 34",
-        "description": "This is the description for Disease 34."
+        "disease_id": "DIS034",
+        "name": "Viêm phổi do vi khuẩn",
+        "description": "Viêm phổi do nhiễm khuẩn."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_035",
-        "name": "Disease 35",
-        "description": "This is the description for Disease 35."
+        "disease_id": "DIS035",
+        "name": "Bệnh hen suyễn dị ứng",
+        "description": "Hen suyễn do dị ứng gây ra."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_036",
-        "name": "Disease 36",
-        "description": "This is the description for Disease 36."
+        "disease_id": "DIS036",
+        "name": "Viêm thận",
+        "description": "Bệnh viêm ảnh hưởng đến thận."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_037",
-        "name": "Disease 37",
-        "description": "This is the description for Disease 37."
+        "disease_id": "DIS037",
+        "name": "Bệnh khớp",
+        "description": "Bệnh viêm hoặc thoái hóa khớp."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_038",
-        "name": "Disease 38",
-        "description": "This is the description for Disease 38."
+        "disease_id": "DIS038",
+        "name": "Viêm tuyến giáp",
+        "description": "Viêm tuyến giáp do tự miễn."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_039",
-        "name": "Disease 39",
-        "description": "This is the description for Disease 39."
+        "disease_id": "DIS039",
+        "name": "Bệnh viêm gan siêu vi B",
+        "description": "Nhiễm trùng gan do virus siêu vi B."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_040",
-        "name": "Disease 40",
-        "description": "This is the description for Disease 40."
+        "disease_id": "DIS040",
+        "name": "Bệnh viêm gan siêu vi C",
+        "description": "Nhiễm trùng gan do virus siêu vi C."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_041",
-        "name": "Disease 41",
-        "description": "This is the description for Disease 41."
+        "disease_id": "DIS041",
+        "name": "Bệnh trào ngược dạ dày thực quản",
+        "description": "Tình trạng acid trong dạ dày trào ngược lên thực quản."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_042",
-        "name": "Disease 42",
-        "description": "This is the description for Disease 42."
+        "disease_id": "DIS042",
+        "name": "Bệnh viêm tụy",
+        "description": "Viêm tụy do nhiều nguyên nhân khác nhau."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_043",
-        "name": "Disease 43",
-        "description": "This is the description for Disease 43."
+        "disease_id": "DIS043",
+        "name": "Bệnh loãng xương",
+        "description": "Giảm mật độ xương dẫn đến dễ gãy."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_044",
-        "name": "Disease 44",
-        "description": "This is the description for Disease 44."
+        "disease_id": "DIS044",
+        "name": "Bệnh béo phì",
+        "description": "Tình trạng thừa cân do chế độ ăn uống không hợp lý."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_045",
-        "name": "Disease 45",
-        "description": "This is the description for Disease 45."
+        "disease_id": "DIS045",
+        "name": "Bệnh trầm cảm",
+        "description": "Rối loạn tâm trạng nghiêm trọng."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_046",
-        "name": "Disease 46",
-        "description": "This is the description for Disease 46."
+        "disease_id": "DIS046",
+        "name": "Bệnh sa sút trí tuệ",
+        "description": "Rối loạn tâm thần dẫn đến mất trí nhớ."
+       },
+    {
+        "disease_id": "DIS047",
+        "name": "Bệnh viêm mũi dị ứng",
+        "description": "Viêm mũi do dị ứng."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_047",
-        "name": "Disease 47",
-        "description": "This is the description for Disease 47."
+        "disease_id": "DIS048",
+        "name": "Bệnh viêm mạch",
+        "description": "Viêm ảnh hưởng đến mạch máu."
     },
     {
-        "_id": ObjectId(),
-        "disease_id": "DS_048",
-        "name": "Disease 48",
-        "description": "This is the description for Disease 48."
-    },
-    {
-        "_id": ObjectId(),
-        "disease_id": "DS_049",
-        "name": "Disease 49",
-        "description": "This is the description for Disease 49."
+        "disease_id": "DIS049",
+        "name": "Bệnh viêm khớp dạng thấp",
+        "description": "Bệnh tự miễn gây viêm khớp."
     },
     {
         "disease_id": "DIS050",
         "name": "Bệnh nhiễm trùng huyết",
         "description": "Nhiễm trùng nặng gây ra phản ứng toàn thân."
-    }
+    },
+    { "disease_id": "DIS051", "name": "Bệnh cúm", "description": "Bệnh do virus cúm gây ra, gây sốt, ho, đau cơ." },
+    { "disease_id": "DIS052", "name": "Cảm lạnh", "description": "Bệnh nhiễm trùng nhẹ ở đường hô hấp, thường do virus." },
+    { "disease_id": "DIS053", "name": "Viêm phổi", "description": "Nhiễm trùng ở phổi, gây khó thở và ho." },
+    { "disease_id": "DIS054", "name": "Hen suyễn", "description": "Bệnh mãn tính ảnh hưởng đến đường thở, gây khó thở." },
+    { "disease_id": "DIS055", "name": "Viêm gan B", "description": "Nhiễm virus viêm gan B, có thể dẫn đến bệnh gan mãn tính." },
+    { "disease_id": "DIS056", "name": "Đau dạ dày", "description": "Cảm giác đau hoặc khó chịu ở vùng dạ dày." },
+    { "disease_id": "DIS057", "name": "Tiểu đường", "description": "Bệnh chuyển hóa gây ra lượng đường trong máu cao." },
+    { "disease_id": "DIS058", "name": "Huyết áp cao", "description": "Tình trạng sức khỏe mãn tính có thể gây ra các vấn đề tim mạch." },
+    { "disease_id": "DIS059", "name": "Viêm khớp", "description": "Bệnh viêm các khớp, gây đau và cứng khớp." },
+    { "disease_id": "DIS060", "name": "Bệnh tim", "description": "Các vấn đề về tim mạch, có thể gây đau ngực hoặc khó thở." },
+    { "disease_id": "DIS061", "name": "Suy tim", "description": "Tình trạng khi tim không bơm đủ máu để đáp ứng nhu cầu cơ thể." },
+    { "disease_id": "DIS062", "name": "Bệnh trĩ", "description": "Sưng và viêm ở tĩnh mạch hậu môn." },
+    { "disease_id": "DIS063", "name": "Viêm loét dạ dày", "description": "Sự xuất hiện của các vết loét trong dạ dày." },
+    { "disease_id": "DIS064", "name": "Bệnh gút", "description": "Tình trạng viêm khớp do tăng axit uric trong máu." },
+    { "disease_id": "DIS065", "name": "Bệnh tiểu đường type 1", "description": "Bệnh tự miễn dịch ảnh hưởng đến insulin." },
+    { "disease_id": "DIS066", "name": "Bệnh tiểu đường type 2", "description": "Bệnh liên quan đến insulin và kháng insulin." },
+    { "disease_id": "DIS067", "name": "Bệnh động kinh", "description": "Rối loạn thần kinh gây ra cơn co giật." },
+    { "disease_id": "DIS068", "name": "Bệnh Alzheimer", "description": "Bệnh thoái hóa thần kinh dẫn đến mất trí nhớ." },
+    { "disease_id": "DIS069", "name": "Bệnh Parkinson", "description": "Rối loạn thần kinh ảnh hưởng đến chuyển động." },
+    { "disease_id": "DIS070", "name": "Bệnh trầm cảm", "description": "Rối loạn tâm thần có triệu chứng buồn bã, mệt mỏi." },
+    { "disease_id": "DIS071", "name": "Rối loạn lo âu", "description": "Bệnh tâm thần gây ra lo âu và căng thẳng." },
+    { "disease_id": "DIS072", "name": "Bệnh tự kỷ", "description": "Rối loạn phát triển ảnh hưởng đến giao tiếp và hành vi." },
+    { "disease_id": "DIS073", "name": "Bệnh béo phì", "description": "Tình trạng thừa cân ảnh hưởng đến sức khỏe." },
+    { "disease_id": "DIS074", "name": "Bệnh suyễn", "description": "Rối loạn hô hấp mãn tính gây khó thở." },
+    { "disease_id": "DIS075", "name": "Bệnh viêm phổi tắc nghẽn mạn tính", "description": "Bệnh phổi mãn tính gây khó thở." },
+    { "disease_id": "DIS076", "name": "Bệnh lao", "description": "Nhiễm trùng do vi khuẩn lao gây ra." },
+    { "disease_id": "DIS077", "name": "Bệnh viêm tụy", "description": "Viêm tụy gây ra đau bụng và khó tiêu." },
+    { "disease_id": "DIS078", "name": "Bệnh celiac", "description": "Bệnh tự miễn dịch liên quan đến gluten." },
+    { "disease_id": "DIS079", "name": "Bệnh viêm ruột", "description": "Viêm các cơ quan trong hệ tiêu hóa." },
+    { "disease_id": "DIS080", "name": "Bệnh sỏi thận", "description": "Sự hình thành sỏi trong thận." },
+    { "disease_id": "DIS081", "name": "Bệnh sỏi mật", "description": "Sự hình thành sỏi trong túi mật." },
+    { "disease_id": "DIS082", "name": "Bệnh nhiễm trùng đường tiểu", "description": "Nhiễm trùng ảnh hưởng đến đường tiểu." },
+    { "disease_id": "DIS083", "name": "Bệnh viêm xoang", "description": "Viêm các xoang trong đầu." },
+    { "disease_id": "DIS084", "name": "Bệnh hen suyễn", "description": "Bệnh hô hấp mãn tính gây khó thở." },
+    { "disease_id": "DIS085", "name": "Bệnh dị ứng", "description": "Phản ứng quá mức của hệ miễn dịch." },
+    { "disease_id": "DIS086", "name": "Bệnh thủy đậu", "description": "Bệnh truyền nhiễm do virus thủy đậu gây ra." },
+    { "disease_id": "DIS087", "name": "Bệnh sởi", "description": "Bệnh truyền nhiễm do virus sởi gây ra." },
+    { "disease_id": "DIS088", "name": "Bệnh quai bị", "description": "Bệnh truyền nhiễm do virus quai bị gây ra." },
+    { "disease_id": "DIS089", "name": "Bệnh viêm gan A", "description": "Nhiễm virus viêm gan A." },
+    { "disease_id": "DIS090", "name": "Bệnh dạ dày", "description": "Các vấn đề về dạ dày gây đau bụng." },
+    { "disease_id": "DIS091", "name": "Bệnh tiểu đường gestational", "description": "Tiểu đường phát sinh trong thời kỳ mang thai." },
+    { "disease_id": "DIS092", "name": "Bệnh hô hấp", "description": "Các bệnh liên quan đến hệ hô hấp." },
+    { "disease_id": "DIS093", "name": "Bệnh đau đầu", "description": "Cảm giác đau hoặc khó chịu ở đầu." },
+    { "disease_id": "DIS094", "name": "Bệnh thần kinh", "description": "Các rối loạn liên quan đến hệ thần kinh." },
+    { "disease_id": "DIS095", "name": "Bệnh hoại tử", "description": "Tình trạng chết tế bào mô." },
+    { "disease_id": "DIS096", "name": "Bệnh loãng xương", "description": "Mật độ xương thấp, dễ gãy xương." },
+    { "disease_id": "DIS097", "name": "Bệnh nhồi máu cơ tim", "description": "Tình trạng tim không nhận đủ máu." },
+    { "disease_id": "DIS098", "name": "Bệnh động mạch vành", "description": "Hẹp động mạch cung cấp máu cho tim." },
+    { "disease_id": "DIS099", "name": "Bệnh phổi tắc nghẽn mãn tính", "description": "Bệnh phổi mãn tính ảnh hưởng đến hô hấp." },
+    { "disease_id": "DIS100", "name": "Bệnh viêm khớp dạng thấp", "description": "Bệnh viêm khớp mãn tính." },
 ]);
 
 db.Services.insertMany([

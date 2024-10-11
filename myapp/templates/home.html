@@ -16,24 +16,32 @@
     </div>
 
     <div class="button-group">
+        {% if request.session.user.role == 2 %}
         <a href="{% url 'add_visit' %}">
             <button>Đăng ký khám bệnh</button>
         </a>
+        {% endif %}
+        {% if request.session.user.role != 3 %}
         <a href="{% url 'examination' %}">
             <button>Khám bệnh</button>
         </a>
+        {% endif %}
+        {% if request.session.user.role == 2 %}
         <a href="{% url 'patient_care' %}">
             <button>Chăm sóc bệnh nhân</button>
         </a>
+        {% endif %}
         <a href="{% url 'get_history' %}">
             <button>Xem lịch sử khám bệnh</button>
         </a>
         <a href="{% url 'get_all_income' %}">
             <button>Tính lương</button>
         </a>
+        {% if request.session.user.role == 3 %}
         <a href="{% url 'get_revenue' %}">
             <button>Tính doanh thu</button>
         </a>
+        {% endif %}
         <a href="{% url 'get_mode_diseases' %}">
             <button>Các bệnh trong tháng</button>
         </a>

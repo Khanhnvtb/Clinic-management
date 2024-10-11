@@ -350,65 +350,71 @@ def examination(request):
 @login_required
 def add_services(request, visit_id):
     if request.session['user']['role'] == 2:
-        # Tạo formset với 1 form trống
-        DescriptionFormSet = formset_factory(DescriptionForm, extra=2)
+        try:
+            # Tạo formset với 1 form trống
+            DescriptionFormSet = formset_factory(DescriptionForm, extra=2)
 
-        if request.method == "POST":
-            # Bind dữ liệu từ request.POST vào formset
-            formset = DescriptionFormSet(request.POST or None)
+            if request.method == "POST":
+                # Bind dữ liệu từ request.POST vào formset
+                formset = DescriptionFormSet(request.POST or None)
 
-            if formset.is_valid():
-                descriptions = []
-                services = []
-                total = 0
-                db_handle, client = get_db_handle()
+                if formset.is_valid():
+                    descriptions = []
+                    services = []
+                    total = 0
+                    db_handle, client = get_db_handle()
 
-                # Lặp qua từng form trong formset
-                for form in formset:
-                    if form.is_valid():
-                        service_id = form.cleaned_data.get('service')
-                        service = db_handle['Services'].find_one({"service_id": int(service_id)})
-                        # Thêm mô tả dịch vụ
-                        descriptions.append({
-                            'content': service['name'],
-                            'description': '',
-                            'time': datetime.now(),
-                        })
+                    # Lặp qua từng form trong formset
+                    for form in formset:
+                        if form.is_valid():
+                            service_id = form.cleaned_data.get('service')
+                            service = db_handle['Services'].find_one({"service_id": int(service_id)})
+                            # Thêm mô tả dịch vụ
+                            descriptions.append({
+                                'content': service['name'],
+                                'description': '',
+                                'time': datetime.now(),
+                            })
 
-                        services.append({
-                            'service_id': service_id,
-                            'quantity': form.cleaned_data.get('quantity')
-                        })
+                            services.append({
+                                'service_id': service_id,
+                                'quantity': form.cleaned_data.get('quantity')
+                            })
 
-                        # Cộng tổng giá
-                        total += service['price'] * form.cleaned_data.get('quantity')
+                            # Cộng tổng giá
+                            total += service['price'] * form.cleaned_data.get('quantity')
 
-                # Cập nhật Visit với descriptions
-                db_handle['Visits'].update_one(
-                    {'visit_id': visit_id},
-                    {'$set': {'descriptions': descriptions}}
-                )
+                    # Cập nhật Visit với descriptions
+                    db_handle['Visits'].update_one(
+                        {'visit_id': visit_id},
+                        {'$set': {'descriptions': descriptions}}
+                    )
 
-                # Tạo bill mới
-                no = db_handle['Bills'].find().sort("bill_id", -1).limit(1)[0]['bill_id'] + 1
+                    # Tạo bill mới
+                    no = db_handle['Bills'].find().sort("bill_id", -1).limit(1)[0]['bill_id'] + 1
 
-                bill = {
-                    'bill_id': no,
-                    'services': services,
-                    'date': datetime.now(),
-                    'total': total
-                }
+                    bill = {
+                        'bill_id': no,
+                        'services': services,
+                        'date': datetime.now(),
+                        'total': total
+                    }
 
-                # Thêm bill mới vào collection Bills
-                db_handle['Bills'].insert_one(bill)
+                    # Thêm bill mới vào collection Bills
+                    db_handle['Bills'].insert_one(bill)
 
-                return redirect('home')
-        else:
-            # Nếu là GET, chỉ khởi tạo formset rỗng
-            formset = DescriptionFormSet()
+                    return redirect('home')
+            else:
+                # Nếu là GET, chỉ khởi tạo formset rỗng
+                formset = DescriptionFormSet()
 
-        return render(request, 'add_services.html',
-                      {'formset': formset, 'visit_id': visit_id, 'flag': 1, 'url': 'add_services'})
+            return render(request, 'add_services.html',
+                          {'formset': formset, 'visit_id': visit_id, 'flag': 1, 'url': 'add_services'})
+        except:
+            storage = messages.get_messages(request)
+            storage.used = True
+            messages.add_message(request, messages.SUCCESS, "Mã khám bệnh không đúng")
+            return redirect('examination')
     else:
         return redirect('home')
 
@@ -674,44 +680,50 @@ def add_diagnose(request, visit_id):
     if request.session['user']['role'] == 1:
         db_handle, client = get_db_handle()
         # Lấy danh sách description hiện tại của visit_id
-        visit = db_handle['Visits'].find_one(
-            {"visit_id": visit_id}, {'_id': 0, 'descriptions': 1, 'flag': 1, 'diagnose': 1}
-        )
-        descriptions = visit['descriptions']
-        if request.method == "POST":
-            diagnose = request.POST.get('diagnose') or ""
-            extra = int(request.POST.get('extra')) or 0
+        try:
+            visit = db_handle['Visits'].find_one(
+                {"visit_id": visit_id}, {'_id': 0, 'descriptions': 1, 'flag': 1, 'diagnose': 1}
+            )
+            descriptions = visit['descriptions']
+            if request.method == "POST":
+                diagnose = request.POST.get('diagnose') or ""
+                extra = int(request.POST.get('extra')) or 0
 
-            for i in range(extra):
-                content = descriptions[i]['content']
-                description = request.POST.get('form-' + str(i) + '-description')
-                # Cập nhật mô tả mới vào phần tử mảng description có content tương ứng
-                db_handle['Visits'].update_one(
-                    {'visit_id': visit_id, 'descriptions.content': content},
-                    {'$set': {'descriptions.$.description': description}}
-                )
-                db_handle['Visits'].update_one(
-                    {'visit_id': visit_id, 'descriptions.content': content},
-                    {'$set': {'descriptions.$.time': datetime.now()}}
-                )
+                for i in range(extra):
+                    content = descriptions[i]['content']
+                    description = request.POST.get('form-' + str(i) + '-description')
+                    # Cập nhật mô tả mới vào phần tử mảng description có content tương ứng
+                    db_handle['Visits'].update_one(
+                        {'visit_id': visit_id, 'descriptions.content': content},
+                        {'$set': {'descriptions.$.description': description}}
+                    )
+                    db_handle['Visits'].update_one(
+                        {'visit_id': visit_id, 'descriptions.content': content},
+                        {'$set': {'descriptions.$.time': datetime.now()}}
+                    )
 
-            # Cập nhật diagnose
-            db_handle['Visits'].update_one({'visit_id': visit_id},
-                                           {'$set': {'diagnose': diagnose}})
-            db_handle['Visits'].update_one({'visit_id': visit_id},
-                                           {'$set': {'flag': 1}})
+                # Cập nhật diagnose
+                db_handle['Visits'].update_one({'visit_id': visit_id},
+                                               {'$set': {'diagnose': diagnose}})
+                db_handle['Visits'].update_one({'visit_id': visit_id},
+                                               {'$set': {'flag': 1}})
 
-            return redirect('add_diagnose', visit_id=visit_id)
-        else:
-            # Khởi tạo formset từ dữ liệu hiện tại trong GET request
-            ExaminationFormSet = formset_factory(ExaminationForm, extra=0)
-            formset = ExaminationFormSet(initial=[
-                {'content': desc['content'], 'description': desc['description']}
-                for desc in descriptions
-            ])
-            return render(request, 'add_diagnose.html',
-                          {'formset': formset, 'flag': visit['flag'], 'diagnose': visit['diagnose'],
-                           'extra': len(descriptions)})
+                return redirect('add_diagnose', visit_id=visit_id)
+            else:
+                # Khởi tạo formset từ dữ liệu hiện tại trong GET request
+                ExaminationFormSet = formset_factory(ExaminationForm, extra=0)
+                formset = ExaminationFormSet(initial=[
+                    {'content': desc['content'], 'description': desc['description']}
+                    for desc in descriptions
+                ])
+                return render(request, 'add_diagnose.html',
+                              {'formset': formset, 'flag': visit['flag'], 'diagnose': visit['diagnose'],
+                               'extra': len(descriptions)})
+        except:
+            storage = messages.get_messages(request)
+            storage.used = True
+            messages.add_message(request, messages.SUCCESS, "Mã khám bệnh không đúng")
+            return redirect('examination')
     else:
         return redirect('home')
 
